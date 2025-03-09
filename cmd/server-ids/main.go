@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"server-ids/middleware"
+	"server-ids/internal/auth"
+	"server-ids/internal/middleware"
 
 	"github.com/gorilla/mux"
 )
@@ -12,6 +13,10 @@ import (
 func main() {
 	r := mux.NewRouter()
 	middleware := middleware.NewMiddleware()
+
+	authDB := auth.NewAuthDBMemory()
+	authService := auth.NewAuthService(authDB)
+	auth.RegisterAuthRoutes(r, middleware, authService)
 	
 	r.HandleFunc("/", middleware.ApplyMiddleware(func(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprint(w, "Welcome to the server\n")
