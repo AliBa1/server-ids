@@ -18,8 +18,27 @@ type AuthDBMemory struct {
 }
 
 func NewAuthDBMemory() *AuthDBMemory {
+	mockUsers := []user.User{
+		*user.NewUser("funguy123", "admin12345", "admin"),
+		*user.NewUser("bossman", "emp12345", "employee"),
+		*user.NewUser("grumpy", "guest12345", "guest"),
+		*user.NewUser("jpearson", "guest12345", "guest"),
+		*user.NewUser("fredrick5", "guest12345", "guest"),
+		*user.NewUser("ballhoggary", "emp12345", "employee"),
+		*user.NewUser("erick", "admin12345", "admin"),
+		*user.NewUser("barrylarry", "emp12345", "employee"),
+		*user.NewUser("twotthree", "guest12345", "guest"),
+		*user.NewUser("yap", "guest12345", "guest"),
+		*user.NewUser("boardman45", "guest12345", "guest"),
+		*user.NewUser("1819twenty", "emp12345", "employee"),
+		*user.NewUser("opi", "guest12345", "guest"),
+		*user.NewUser("patrick", "guest12345", "guest"),
+		*user.NewUser("fred111", "guest12345", "guest"),
+		*user.NewUser("secure21", "guest12345", "guest"),
+	}
 	return &AuthDBMemory{
-		Users: []user.User{},
+		// Users: []user.User{},
+		Users: mockUsers,
 	}
 }
 

@@ -17,11 +17,11 @@ func main() {
 	authDB := auth.NewAuthDBMemory()
 	authService := auth.NewAuthService(authDB)
 	auth.RegisterAuthRoutes(r, middleware, authService)
-	
+
 	r.HandleFunc("/", middleware.ApplyMiddleware(func(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprint(w, "Welcome to the server\n")
 	}))
-	
+
 	r.HandleFunc("/welcome/{user}", middleware.ApplyMiddleware(func(w http.ResponseWriter, req *http.Request) {
 		vars := mux.Vars(req)
 		user := vars["user"]

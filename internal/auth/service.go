@@ -12,7 +12,7 @@ func NewAuthService(db AuthDB) *AuthService {
 	return &AuthService{db: db}
 }
 
-func (s *AuthService) Login(username string, password string)  {
+func (s *AuthService) Login(username string, password string) {
 	// OPTIONAL: hash passwords and compare to hashed
 
 	// check if matches a user
@@ -21,9 +21,11 @@ func (s *AuthService) Login(username string, password string)  {
 	// else give session token
 }
 
-func (s *AuthService) Register(username string, password string)  {
-	// create new User
-	newUser := user.NewUser(username, password, user.GUEST)
-	// add to user db
+func (s *AuthService) Register(username string, password string) {
+	newUser := user.NewUser(username, password, "guest")
 	s.db.CreateUser(*newUser)
+}
+
+func (s *AuthService) CreateMockUsers() {
+
 }
