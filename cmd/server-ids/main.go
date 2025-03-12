@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"server-ids/internal/auth"
 	"server-ids/internal/middleware"
+	"server-ids/internal/user"
 
 	"github.com/gorilla/mux"
 )
@@ -18,10 +19,15 @@ func main() {
 	authService := auth.NewAuthService(authDB)
 	auth.RegisterAuthRoutes(r, middleware, authService)
 
+	userService := user.NewUserService(authDB)
+	user.RegisterUserRoutes(r, middleware, userService)
+
+	// delete
 	r.HandleFunc("/", middleware.ApplyMiddleware(func(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprint(w, "Welcome to the server\n")
 	}))
 
+	// delete
 	r.HandleFunc("/welcome/{user}", middleware.ApplyMiddleware(func(w http.ResponseWriter, req *http.Request) {
 		vars := mux.Vars(req)
 		user := vars["user"]

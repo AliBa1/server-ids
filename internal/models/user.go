@@ -1,17 +1,9 @@
-package user
+package models
 
 import (
 	"math/rand"
 	"net"
 	"time"
-)
-
-type Role int
-
-const (
-	GUEST Role = iota
-	EMPLOYEE
-	ADMIN
 )
 
 type FailedLoginInfo struct {
@@ -43,6 +35,7 @@ func NewUser(username string, password string, role string) *User {
 }
 
 func getRandomIP() net.IP {
+	// from random IP generator
 	ipAddrs := []string{
 		"202.28.138.47",
 		"95.201.59.42",

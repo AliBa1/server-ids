@@ -25,8 +25,8 @@ func (middleware *Middleware) addToChain(newMiddleware func(http.HandlerFunc) ht
 	middleware.chain = append([]func(http.HandlerFunc) http.HandlerFunc{newMiddleware}, middleware.chain...)
 }
 
-func (middleware *Middleware) ApplyMiddleware(handler http.HandlerFunc) http.HandlerFunc  {
-	for _, m := range middleware.chain{
+func (middleware *Middleware) ApplyMiddleware(handler http.HandlerFunc) http.HandlerFunc {
+	for _, m := range middleware.chain {
 		handler = m(handler)
 	}
 	return handler
@@ -37,7 +37,7 @@ func (middleware *Middleware) Logger(next http.HandlerFunc) http.HandlerFunc {
 		url := r.URL.Path
 		httpMethod := r.Method
 		protocol := r.Proto
-		log.Printf(" - %s %s Request @ URL: %s", protocol, httpMethod, url)
+		log.Printf("- %s %s Request @ URL: %s", protocol, httpMethod, url)
 		next(w, r)
 	}
 }

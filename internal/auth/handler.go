@@ -33,27 +33,26 @@ func (h *AuthHandler) PostRegister(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprintln(w, "Missing username or password")
 		return
 	}
-	fmt.Fprint(w, "Creating your account...\n")
 	h.service.Register(username, password)
+	fmt.Fprintf(w, "Welcome %s! You account has been created\n", username)
 }
 
 func (h *AuthHandler) GetUsers(w http.ResponseWriter, req *http.Request) {
-	users, err := h.service.db.GetAllUsers()
-	if err != nil {
-		fmt.Printf("Error occured while getting users: %s\n", err)
-		return
-	}
-
 	fmt.Fprintln(w, "Getting users from the database...")
+	users, err := h.service.GetAllUsers()
+
+	if err != nil {
+		fmt.Fprintf(w, "Error occured while getting users: %s\n", err)
+	}
 
 	if len(users) < 1 {
 		fmt.Fprintln(w, "There are no users")
-		return
-	}
+	} else {
+		fmt.Fprintf(w, "%-15s %-10s %-55s %-20s\n", "Username", "Role", "Last Login Date", "Last Login IP")
+		fmt.Fprintf(w, "%-100s\n", "---------------------------------------------------------------------------------------------------")
+		for _, u := range users {
+			fmt.Fprintf(w, "%-15s %-10s %-55s %-20s\n", u.Username, u.Role, u.LastLoginDate, u.LastLoginIP.String())
+		}
 
-	fmt.Fprintf(w, "%-15s %-10s %-55s %-20s\n", "Username", "Role", "Last Login Date", "Last Login IP")
-	fmt.Fprintf(w, "%-100s\n", "---------------------------------------------------------------------------------------------------")
-	for _, u := range users {
-		fmt.Fprintf(w, "%-15s %-10s %-55s %-20s\n", u.Username, u.Role, u.LastLoginDate, u.LastLoginIP.String())
 	}
 }
