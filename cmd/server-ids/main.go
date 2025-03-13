@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"server-ids/internal/auth"
+	"server-ids/internal/document"
 	"server-ids/internal/middleware"
 	"server-ids/internal/user"
 
@@ -21,6 +22,10 @@ func main() {
 
 	userService := user.NewUserService(authDB)
 	user.RegisterUserRoutes(r, middleware, userService)
+
+	docsDB := document.NewDocsDBMemory()
+	documentService := document.NewDocsService(docsDB)
+	document.RegisterDocumentRoutes(r, middleware, documentService)
 
 	// delete
 	r.HandleFunc("/", middleware.ApplyMiddleware(func(w http.ResponseWriter, req *http.Request) {

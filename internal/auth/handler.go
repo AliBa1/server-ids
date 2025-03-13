@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 // handle HTTP requests can call services
@@ -34,11 +35,12 @@ func (h *AuthHandler) PostRegister(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	h.service.Register(username, password)
-	fmt.Fprintf(w, "Welcome %s! You account has been created\n", username)
+	fmt.Fprintf(w, "Welcome %s! Your account has been created\n", username)
 }
 
 func (h *AuthHandler) GetUsers(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(w, "Getting users from the database...")
+	fmt.Fprintln(w, "")
 	users, err := h.service.GetAllUsers()
 
 	if err != nil {
@@ -49,7 +51,7 @@ func (h *AuthHandler) GetUsers(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprintln(w, "There are no users")
 	} else {
 		fmt.Fprintf(w, "%-15s %-10s %-55s %-20s\n", "Username", "Role", "Last Login Date", "Last Login IP")
-		fmt.Fprintf(w, "%-100s\n", "---------------------------------------------------------------------------------------------------")
+		fmt.Fprintf(w, "%s\n", strings.Repeat("-", 100))
 		for _, u := range users {
 			fmt.Fprintf(w, "%-15s %-10s %-55s %-20s\n", u.Username, u.Role, u.LastLoginDate, u.LastLoginIP.String())
 		}
