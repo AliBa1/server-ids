@@ -29,7 +29,7 @@ I also may use multithreading to run the system faster which would allow the ser
 
 ## System Architecture (_will include network setup_)
 
-> **UML** ![UML for the system code](images/Server%20IDS%20UML.drawio.png)
+> **UML** <br> ![UML for the system code](images/Server%20IDS%20UML.drawio.png)
 
 > **High Level Design** ![UML for the system code](images/Server%20IDS%20High%20Level.png)
 

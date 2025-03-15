@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"server-ids/internal/mock"
 	"server-ids/internal/models"
+
+	"github.com/google/uuid"
 )
 
 // CRUD database
@@ -13,10 +15,12 @@ type AuthDB interface {
 	GetUser(username string) (models.User, error)
 	CreateUser(user models.User)
 	UpdateUser(user models.User) error
+	AddLoginKey(key uuid.UUID, username string) error
 }
 
 type AuthDBMemory struct {
-	Users []models.User
+	Users     []models.User
+	LoginKeys map[uuid.UUID]string
 }
 
 func NewAuthDBMemory() *AuthDBMemory {
@@ -41,7 +45,8 @@ func NewAuthDBMemory() *AuthDBMemory {
 	return &AuthDBMemory{
 		// Users: []models.User{},
 		// Users: mockUsers,
-		Users: mock.GetMockUsers(),
+		Users:     mock.GetMockUsers(),
+		LoginKeys: map[uuid.UUID]string{},
 	}
 }
 
@@ -70,4 +75,13 @@ func (db *AuthDBMemory) UpdateUser(user models.User) error {
 		}
 	}
 	return fmt.Errorf("user '%s' not found", user.Username)
+}
+
+func (db *AuthDBMemory) AddLoginKey(key uuid.UUID, username string) error {
+	if db.LoginKeys[key] == "" {
+		db.LoginKeys[key] = username
+		return nil
+	}
+
+	return fmt.Errorf("Login key is taken!")
 }
