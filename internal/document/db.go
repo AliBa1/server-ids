@@ -10,7 +10,7 @@ import (
 
 type DocsDB interface {
 	GetAllDocs() ([]models.Document, error)
-	GetDoc(title string) (models.Document, error)
+	GetDoc(title string) (*models.Document, error)
 	// CreateDoc(user models.User)
 	// UpdateDoc(user models.User) error
 }
@@ -29,13 +29,13 @@ func (db *DocsDBMemory) GetAllDocs() ([]models.Document, error) {
 	return db.Documents, nil
 }
 
-func (db *DocsDBMemory) GetDoc(title string) (models.Document, error) {
+func (db *DocsDBMemory) GetDoc(title string) (*models.Document, error) {
 	for _, d := range db.Documents {
 		if d.Title == title {
-			return d, nil
+			return &d, nil
 		}
 	}
-	return models.Document{}, fmt.Errorf("document titled '%s' not found", title)
+	return nil, fmt.Errorf("document titled '%s' not found", title)
 }
 
 // func (db *DocsDBMemory) CreateDoc(document models.Document) {

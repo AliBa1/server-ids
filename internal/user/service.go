@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"server-ids/internal/auth"
 )
 
@@ -18,15 +17,13 @@ func NewUserService(db auth.AuthDB) *UserService {
 func (u *UserService) UpdateRole(username string, newRole string) error {
 	selectedUser, err := u.db.GetUser(username)
 	if err != nil {
-		fmt.Printf("Error occured while getting user: %s\n", err)
 		return err
 	}
 
 	selectedUser.Role = newRole
 
-	err = u.db.UpdateUser(selectedUser)
+	err = u.db.UpdateUser(*selectedUser)
 	if err != nil {
-		fmt.Printf("Error occured while updating user: %s\n", err)
 		return err
 	}
 	return nil

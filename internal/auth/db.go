@@ -12,8 +12,8 @@ import (
 
 type AuthDB interface {
 	GetAllUsers() ([]models.User, error)
-	GetUser(username string) (models.User, error)
-	CreateUser(user models.User)
+	GetUser(username string) (*models.User, error)
+	CreateUser(user models.User) error
 	UpdateUser(user models.User) error
 	AddLoginKey(key uuid.UUID, username string) error
 }
@@ -54,17 +54,18 @@ func (db *AuthDBMemory) GetAllUsers() ([]models.User, error) {
 	return db.Users, nil
 }
 
-func (db *AuthDBMemory) GetUser(username string) (models.User, error) {
+func (db *AuthDBMemory) GetUser(username string) (*models.User, error) {
 	for _, u := range db.Users {
 		if u.Username == username {
-			return u, nil
+			return &u, nil
 		}
 	}
-	return models.User{}, fmt.Errorf("user '%s' not found", username)
+	return nil, fmt.Errorf("user '%s' not found", username)
 }
 
-func (db *AuthDBMemory) CreateUser(user models.User) {
+func (db *AuthDBMemory) CreateUser(user models.User) error {
 	db.Users = append(db.Users, user)
+	return nil
 }
 
 func (db *AuthDBMemory) UpdateUser(user models.User) error {
@@ -83,5 +84,5 @@ func (db *AuthDBMemory) AddLoginKey(key uuid.UUID, username string) error {
 		return nil
 	}
 
-	return fmt.Errorf("Login key is taken!")
+	return fmt.Errorf("login key is taken")
 }

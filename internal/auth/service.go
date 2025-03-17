@@ -23,7 +23,6 @@ func (s *AuthService) Login(username string, password string) error {
 	// check if matches a user
 	user, err := s.db.GetUser(username)
 	if err != nil {
-		fmt.Printf("Error occured while getting user '%s': %s\n", username, err)
 		return err
 		// return nil, err
 	}
@@ -31,25 +30,32 @@ func (s *AuthService) Login(username string, password string) error {
 	// if password doesn't match error handle
 	if user.Password != password {
 		// user attempted login but wrong password
-		
+
 		// add to failed login attempts
+
+		return fmt.Errorf("username or password doesn't match")
 	}
-	
+
 	// else give session token
 	key := uuid.New()
 	s.db.AddLoginKey(key, username)
 	return nil
 }
 
-func (s *AuthService) Register(username string, password string) {
+func (s *AuthService) Register(username string, password string) error {
+	userExists, _ := s.db.GetUser(username)
+	if userExists != nil {
+		return fmt.Errorf("username is taken")
+	}
 	newUser := models.NewUser(username, password, "guest")
 	s.db.CreateUser(*newUser)
+	return nil
 }
 
 func (s *AuthService) GetAllUsers() ([]models.User, error) {
 	users, err := s.db.GetAllUsers()
 	if err != nil {
-		return nil, fmt.Errorf("Error occured while getting users: %s\n", err)
+		return nil, err
 	}
-	return users, err
+	return users, nil
 }

@@ -34,7 +34,11 @@ func (h *AuthHandler) PostRegister(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprintln(w, "Missing username or password")
 		return
 	}
-	h.service.Register(username, password)
+	err := h.service.Register(username, password)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %s\n", err)
+		return
+	}
 	fmt.Fprintf(w, "Welcome %s! Your account has been created\n", username)
 }
 
