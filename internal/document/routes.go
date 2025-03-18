@@ -10,5 +10,5 @@ func RegisterDocumentRoutes(r *mux.Router, m *middleware.Middleware, service *Do
 	handler := NewDocsHandler(service)
 
 	r.HandleFunc("/docs", m.ApplyMiddleware(handler.GetDocs)).Methods("GET")
-	// r.HandleFunc("/docs/{title}", m.ApplyMiddleware(handler.GetDoc)).Methods("GET")
+	r.HandleFunc("/docs/{title}", m.ApplyMiddleware(handler.GetDoc)).Methods("GET")
 }

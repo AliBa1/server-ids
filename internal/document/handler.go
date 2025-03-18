@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"server-ids/internal/models"
-	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 type DocsHandler struct {
@@ -25,26 +26,35 @@ func (h *DocsHandler) GetDocs(w http.ResponseWriter, req *http.Request) {
 
 	if err != nil {
 		fmt.Fprintf(w, "Error occured while getting documents: %s\n", err)
+		return
 	}
 
-	if len(docs) < 1 {
-		fmt.Fprintln(w, "There are no documents")
-	} else {
-		lockEmoji := "🔒"
-		unlockEmoji := "🔓"
-		fmt.Fprintf(w, "%-30s %-10s\n", "Title", "Locked")
-		fmt.Fprintf(w, "%s\n", strings.Repeat("-", 40))
-		for _, d := range docs {
-			lockStatus := unlockEmoji
-			if d.IsLocked {
-				lockStatus = lockEmoji
-			}
-			fmt.Fprintf(w, "%-30s %-10s\n", d.Title, lockStatus)
-		}
-		fmt.Fprintf(w, "\nTo view any of these documents go to '/docs/{title}'\n")
+	err = h.service.DisplayDocs(docs, w)
+	if err != nil {
+		fmt.Fprintf(w, "Error occured while displaying documents: %s\n", err)
+		return
 	}
 }
 
-// func (h *DocsHandler) GetDoc(w http.ResponseWriter, req *http.Request) {
+func (h *DocsHandler) GetDoc(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	title := vars["title"]
 
-// }
+	fmt.Fprintf(w, "Getting document '%s' from the database...\n", title)
+	fmt.Fprintln(w, "")
+
+	var doc models.Document
+	var err error
+	doc, err = h.service.GetDoc(title)
+
+	if err != nil {
+		fmt.Fprintf(w, "Error occured while getting document: %s\n", err)
+		return
+	}
+
+	err = h.service.DisplayDoc(doc, w)
+	if err != nil {
+		fmt.Fprintf(w, "Error occured while displaying document: %s\n", err)
+		return
+	}
+}
