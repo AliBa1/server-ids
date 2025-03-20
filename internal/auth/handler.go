@@ -28,7 +28,12 @@ func (h *AuthHandler) PostLogin(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprintln(w, "Missing username or password")
 		return
 	}
-	err := h.service.Login(username, password)
+	key, err := h.service.Login(username, password)
+	// work in progress vvvvv
+	fmt.Printf("Current Auth Header: %s\n", w.Header().Get("Authorization"))
+	w.Header().Set("Authorization", "Basic "+key.String())
+	fmt.Printf("Current Auth Header: %s\n", w.Header().Get("Authorization"))
+	
 	if err != nil {
 		fmt.Fprintf(w, "Error: %s\n", err)
 		return

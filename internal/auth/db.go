@@ -50,11 +50,8 @@ func (db *AuthDBMemory) UpdateUser(user models.User) error {
 	return fmt.Errorf("user '%s' not found", user.Username)
 }
 
-func (db *AuthDBMemory) AddLoginKey(key uuid.UUID, username string) error {
-	if db.LoginKeys[key] == "" {
+func (db *AuthDBMemory) AddLoginKey(key uuid.UUID, username string) {
+	for db.LoginKeys[key] != "" {
 		db.LoginKeys[key] = username
-		return nil
 	}
-
-	return fmt.Errorf("login key is taken")
 }

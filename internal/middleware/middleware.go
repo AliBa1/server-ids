@@ -13,6 +13,7 @@ type MiddlewareInterface interface {
 	addToChain()
 	ApplyMiddleware() http.HandlerFunc
 	Logger() http.HandlerFunc
+	Authorization() http.HandlerFunc
 }
 
 func NewMiddleware() *Middleware {
@@ -38,6 +39,16 @@ func (middleware *Middleware) Logger(next http.HandlerFunc) http.HandlerFunc {
 		httpMethod := r.Method
 		protocol := r.Proto
 		log.Printf("- %s %s Request @ URL: %s", protocol, httpMethod, url)
+		next(w, r)
+	}
+}
+
+// incomplete
+func (middleware *Middleware) Authorization(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// check for authorization in header
+
+		// check if key valid
 		next(w, r)
 	}
 }

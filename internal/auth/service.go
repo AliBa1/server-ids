@@ -17,13 +17,13 @@ func NewAuthService(db AuthDBMemory) *AuthService {
 	return &AuthService{db: db}
 }
 
-func (s *AuthService) Login(username string, password string) error {
+func (s *AuthService) Login(username string, password string) (uuid.UUID, error) {
 	// OPTIONAL: hash passwords and compare to hashed
 
 	// check if matches a user
 	user, err := s.db.GetUser(username)
 	if err != nil {
-		return err
+		return uuid.Nil, err
 	}
 
 	if user.Password != password {
@@ -31,13 +31,13 @@ func (s *AuthService) Login(username string, password string) error {
 
 		// add to failed login attempts
 
-		return fmt.Errorf("username or password doesn't match")
+		return uuid.Nil, fmt.Errorf("username or password doesn't match")
 	}
 
 	// login successful, give session token
 	key := uuid.New()
 	s.db.AddLoginKey(key, username)
-	return nil
+	return key, nil
 }
 
 func (s *AuthService) Register(username string, password string) error {
