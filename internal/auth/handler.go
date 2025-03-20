@@ -22,9 +22,18 @@ func (h *AuthHandler) GetAuth(w http.ResponseWriter, req *http.Request) {
 
 func (h *AuthHandler) PostLogin(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(w, "Checking credentials...")
-	username := "u"
-	password := "p"
-	h.service.Login(username, password)
+	username := req.FormValue("username")
+	password := req.FormValue("password")
+	if username == "" || password == "" {
+		fmt.Fprintln(w, "Missing username or password")
+		return
+	}
+	err := h.service.Login(username, password)
+	if err != nil {
+		fmt.Fprintf(w, "Error: %s\n", err)
+		return
+	}
+	fmt.Fprintf(w, "Hello %s! You are now logged in.\n", username)
 }
 
 func (h *AuthHandler) PostRegister(w http.ResponseWriter, req *http.Request) {

@@ -34,6 +34,7 @@ func (s *AuthService) Login(username string, password string) error {
 		return fmt.Errorf("username or password doesn't match")
 	}
 
+	// login successful, give session token
 	key := uuid.New()
 	s.db.AddLoginKey(key, username)
 	return nil
