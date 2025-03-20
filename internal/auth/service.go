@@ -10,10 +10,10 @@ import (
 // handles buisness logic and calls database
 
 type AuthService struct {
-	db AuthDB
+	db AuthDBMemory
 }
 
-func NewAuthService(db AuthDB) *AuthService {
+func NewAuthService(db AuthDBMemory) *AuthService {
 	return &AuthService{db: db}
 }
 
@@ -24,10 +24,8 @@ func (s *AuthService) Login(username string, password string) error {
 	user, err := s.db.GetUser(username)
 	if err != nil {
 		return err
-		// return nil, err
 	}
 
-	// if password doesn't match error handle
 	if user.Password != password {
 		// user attempted login but wrong password
 
@@ -36,7 +34,6 @@ func (s *AuthService) Login(username string, password string) error {
 		return fmt.Errorf("username or password doesn't match")
 	}
 
-	// else give session token
 	key := uuid.New()
 	s.db.AddLoginKey(key, username)
 	return nil

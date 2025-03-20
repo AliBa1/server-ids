@@ -17,10 +17,10 @@ func main() {
 	middleware := middleware.NewMiddleware()
 
 	authDB := auth.NewAuthDBMemory()
-	authService := auth.NewAuthService(authDB)
+	authService := auth.NewAuthService(*authDB)
 	auth.RegisterAuthRoutes(r, middleware, authService)
 
-	userService := user.NewUserService(authDB)
+	userService := user.NewUserService(*authDB)
 	user.RegisterUserRoutes(r, middleware, userService)
 
 	docsDB := document.NewDocsDBMemory()
