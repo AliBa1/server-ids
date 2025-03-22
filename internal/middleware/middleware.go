@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -19,6 +20,7 @@ type MiddlewareInterface interface {
 func NewMiddleware() *Middleware {
 	m := &Middleware{}
 	m.addToChain(m.Logger)
+	m.addToChain(m.Authorization)
 	return m
 }
 
@@ -46,7 +48,13 @@ func (middleware *Middleware) Logger(next http.HandlerFunc) http.HandlerFunc {
 // incomplete
 func (middleware *Middleware) Authorization(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// check for authorization in header
+		key, err := r.Cookie("session_key")
+		if err != nil {
+			fmt.Printf("Unauthed: %s\n", err)
+			// return
+		} else {
+			fmt.Printf("Current Auth Header: %s\n", key)
+		}
 
 		// check if key valid
 		next(w, r)

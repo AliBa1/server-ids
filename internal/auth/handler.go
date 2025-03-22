@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 )
 
 // handle HTTP requests can call services
@@ -21,7 +22,6 @@ func (h *AuthHandler) GetAuth(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *AuthHandler) PostLogin(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintln(w, "Checking credentials...")
 	username := req.FormValue("username")
 	password := req.FormValue("password")
 	if username == "" || password == "" {
@@ -29,15 +29,20 @@ func (h *AuthHandler) PostLogin(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	key, err := h.service.Login(username, password)
-	// work in progress vvvvv
-	fmt.Printf("Current Auth Header: %s\n", w.Header().Get("Authorization"))
-	w.Header().Set("Authorization", "Basic "+key.String())
-	fmt.Printf("Current Auth Header: %s\n", w.Header().Get("Authorization"))
-	
+
 	if err != nil {
 		fmt.Fprintf(w, "Error: %s\n", err)
 		return
 	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_key",
+		Value:    key.String(),
+		Expires:  time.Now().Add(60 * 24 * time.Hour),
+		HttpOnly: true, // protection from man-in-the-middle attacks
+		Path: "/",
+		// Secure:   true, // protection from XSS attacks w/ HTTPS: (https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies#security)
+	})
 	fmt.Fprintf(w, "Hello %s! You are now logged in.\n", username)
 }
 
