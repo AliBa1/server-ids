@@ -41,6 +41,7 @@ func (db *AuthDBMemory) CreateUser(user models.User) error {
 }
 
 func (db *AuthDBMemory) UpdateUser(user models.User) error {
+	// username can't be updated since it's the id
 	for i, u := range db.Users {
 		if u.Username == user.Username {
 			db.Users[i] = user
@@ -51,7 +52,5 @@ func (db *AuthDBMemory) UpdateUser(user models.User) error {
 }
 
 func (db *AuthDBMemory) AddLoginKey(key uuid.UUID, username string) {
-	for db.LoginKeys[key] != "" {
-		db.LoginKeys[key] = username
-	}
+	db.LoginKeys[key] = username
 }
