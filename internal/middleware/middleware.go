@@ -20,7 +20,7 @@ type MiddlewareInterface interface {
 func NewMiddleware() *Middleware {
 	m := &Middleware{}
 	m.addToChain(m.Logger)
-	m.addToChain(m.Authorization)
+	// m.addToChain(m.Authorization)
 	return m
 }
 
@@ -48,12 +48,12 @@ func (middleware *Middleware) Logger(next http.HandlerFunc) http.HandlerFunc {
 // incomplete
 func (middleware *Middleware) Authorization(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		key, err := r.Cookie("session_key")
+		// key, err := r.Cookie("session_key")
+		_, err := r.Cookie("session_key")
 		if err != nil {
-			fmt.Printf("Unauthed: %s\n", err)
-			// return
-		} else {
-			fmt.Printf("Current Auth Header: %s\n", key)
+			fmt.Printf("Unauthorized attempt on %s - Error: %s\n", r.URL.Path, err)
+			http.Error(w, "Unauthorized: Login to gain access to this route", http.StatusUnauthorized)
+			return
 		}
 
 		// check if key valid
