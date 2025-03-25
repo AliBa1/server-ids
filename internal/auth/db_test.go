@@ -10,18 +10,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetAllUsers(t *testing.T) {
+func TestGetUsersDB(t *testing.T) {
 	db := NewAuthDBMemory()
-	users, err := db.GetAllUsers()
+	users, err := db.GetUsers()
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, users)
 }
 
-func TestGetAllUsers_Empty(t *testing.T) {
+func TestGetUsersDB_Empty(t *testing.T) {
 	db := NewAuthDBMemory()
 	db.Users = []models.User{}
-	users, err := db.GetAllUsers()
+	users, err := db.GetUsers()
 
 	assert.NoError(t, err)
 	assert.Empty(t, users)

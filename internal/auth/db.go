@@ -22,7 +22,7 @@ func NewAuthDBMemory() *AuthDBMemory {
 	}
 }
 
-func (db *AuthDBMemory) GetAllUsers() ([]models.User, error) {
+func (db *AuthDBMemory) GetUsers() ([]models.User, error) {
 	return db.Users, nil
 }
 

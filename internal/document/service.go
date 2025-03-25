@@ -10,19 +10,16 @@ import (
 // handles buisness logic and calls database
 
 type DocsService struct {
-	db DocsDB
+	db *DocsDBMemory
 }
 
-func NewDocsService(db DocsDB) *DocsService {
+func NewDocsService(db *DocsDBMemory) *DocsService {
 	return &DocsService{db: db}
 }
 
 func (d *DocsService) GetAllDocs() ([]models.Document, error) {
 	docs, err := d.db.GetAllDocs()
-	if err != nil {
-		return nil, err
-	}
-	return docs, nil
+	return docs, err
 }
 
 func (d *DocsService) DisplayDocs(docs []models.Document, w http.ResponseWriter) error {
@@ -47,10 +44,7 @@ func (d *DocsService) DisplayDocs(docs []models.Document, w http.ResponseWriter)
 
 func (d *DocsService) GetDoc(title string) (models.Document, error) {
 	doc, err := d.db.GetDoc(title)
-	if err != nil {
-		return models.Document{}, err
-	}
-	return doc, nil
+	return doc, err
 }
 
 func (d *DocsService) DisplayDoc(doc models.Document, w http.ResponseWriter) error {

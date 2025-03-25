@@ -51,6 +51,6 @@ func (s *AuthService) Register(username string, password string) error {
 }
 
 func (s *AuthService) GetAllUsers() ([]models.User, error) {
-	users, err := s.db.GetAllUsers()
+	users, err := s.db.GetUsers()
 	return users, err
 }

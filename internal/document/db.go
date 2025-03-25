@@ -8,13 +8,6 @@ import (
 
 // CRUD database
 
-type DocsDB interface {
-	GetAllDocs() ([]models.Document, error)
-	GetDoc(title string) (models.Document, error)
-	// CreateDoc(user models.User)
-	// UpdateDoc(user models.User) error
-}
-
 type DocsDBMemory struct {
 	Documents []models.Document
 }

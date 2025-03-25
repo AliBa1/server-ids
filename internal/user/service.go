@@ -7,10 +7,10 @@ import (
 // handles buisness logic and calls database
 
 type UserService struct {
-	db auth.AuthDBMemory
+	db *auth.AuthDBMemory
 }
 
-func NewUserService(db auth.AuthDBMemory) *UserService {
+func NewUserService(db *auth.AuthDBMemory) *UserService {
 	return &UserService{db: db}
 }
 

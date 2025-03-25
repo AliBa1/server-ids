@@ -81,7 +81,7 @@ func TestRegister_UsernameTaken(t *testing.T) {
 }
 
 // integration test: service and db interaction
-func TestGetUsers(t *testing.T) {
+func TestGetUsersService(t *testing.T) {
 	db := NewAuthDBMemory()
 	service := NewAuthService(db)
 	users, err := service.GetAllUsers()

@@ -25,13 +25,13 @@ func (h *AuthHandler) PostLogin(w http.ResponseWriter, req *http.Request) {
 	username := req.FormValue("username")
 	password := req.FormValue("password")
 	if username == "" || password == "" {
-		fmt.Fprintln(w, "Missing username or password")
+		http.Error(w, "Missing username or password", http.StatusBadRequest)
 		return
 	}
 	token, err := h.service.Login(username, password)
 
 	if err != nil {
-		fmt.Fprintf(w, "Error: %s\n", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -40,7 +40,7 @@ func (h *AuthHandler) PostLogin(w http.ResponseWriter, req *http.Request) {
 		Value:    token.String(),
 		Expires:  time.Now().Add(60 * 24 * time.Hour),
 		HttpOnly: true, // protection from man-in-the-middle attacks
-		Path: "/",
+		Path:     "/",
 		// Secure:   true, // protection from XSS attacks w/ HTTPS: (https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies#security)
 	})
 	fmt.Fprintf(w, "Hello %s! You are now logged in.\n", username)
@@ -50,12 +50,12 @@ func (h *AuthHandler) PostRegister(w http.ResponseWriter, req *http.Request) {
 	username := req.FormValue("username")
 	password := req.FormValue("password")
 	if username == "" || password == "" {
-		fmt.Fprintln(w, "Missing username or password")
+		http.Error(w, "Missing username or password", http.StatusBadRequest)
 		return
 	}
 	err := h.service.Register(username, password)
 	if err != nil {
-		fmt.Fprintf(w, "Error: %s\n", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	fmt.Fprintf(w, "Welcome %s! Your account has been created\n", username)
@@ -67,7 +67,8 @@ func (h *AuthHandler) GetUsers(w http.ResponseWriter, req *http.Request) {
 	users, err := h.service.GetAllUsers()
 
 	if err != nil {
-		fmt.Fprintf(w, "Error occured while getting users: %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	if len(users) < 1 {
@@ -78,6 +79,5 @@ func (h *AuthHandler) GetUsers(w http.ResponseWriter, req *http.Request) {
 		for _, u := range users {
 			fmt.Fprintf(w, "%-15s %-10s %-55s %-20s\n", u.Username, u.Role, u.LastLoginDate, u.LastLoginIP.String())
 		}
-
 	}
 }

@@ -21,12 +21,13 @@ func (h *UserHandler) UpdateRole(w http.ResponseWriter, req *http.Request) {
 	username := req.FormValue("username")
 	newRole := req.FormValue("newRole")
 	if username == "" || newRole == "" {
-		fmt.Fprintln(w, "Missing username or new role")
+		http.Error(w, "Missing username or new role", http.StatusBadRequest)
 		return
 	}
 	err := h.service.UpdateRole(username, newRole)
 	if err != nil {
-		fmt.Fprintf(w, "Error occured while updating %s's role: %s\n", username, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	fmt.Fprintf(w, "%s now has the %s role\n", username, newRole)
 }

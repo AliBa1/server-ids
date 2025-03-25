@@ -25,13 +25,13 @@ func (h *DocsHandler) GetDocs(w http.ResponseWriter, req *http.Request) {
 	docs, err = h.service.GetAllDocs()
 
 	if err != nil {
-		fmt.Fprintf(w, "Error occured while getting documents: %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	err = h.service.DisplayDocs(docs, w)
 	if err != nil {
-		fmt.Fprintf(w, "Error occured while displaying documents: %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
@@ -48,13 +48,13 @@ func (h *DocsHandler) GetDoc(w http.ResponseWriter, req *http.Request) {
 	doc, err = h.service.GetDoc(title)
 
 	if err != nil {
-		fmt.Fprintf(w, "Error occured while getting document: %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	err = h.service.DisplayDoc(doc, w)
 	if err != nil {
-		fmt.Fprintf(w, "Error occured while displaying document: %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }

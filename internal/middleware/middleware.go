@@ -10,13 +10,6 @@ type Middleware struct {
 	chain []func(http.HandlerFunc) http.HandlerFunc
 }
 
-type MiddlewareInterface interface {
-	addToChain()
-	ApplyMiddleware() http.HandlerFunc
-	Logger() http.HandlerFunc
-	Authorization() http.HandlerFunc
-}
-
 func NewMiddleware() *Middleware {
 	m := &Middleware{}
 	m.addToChain(m.Logger)
