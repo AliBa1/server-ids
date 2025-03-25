@@ -28,7 +28,7 @@ func (h *AuthHandler) PostLogin(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprintln(w, "Missing username or password")
 		return
 	}
-	key, err := h.service.Login(username, password)
+	token, err := h.service.Login(username, password)
 
 	if err != nil {
 		fmt.Fprintf(w, "Error: %s\n", err)
@@ -37,7 +37,7 @@ func (h *AuthHandler) PostLogin(w http.ResponseWriter, req *http.Request) {
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_key",
-		Value:    key.String(),
+		Value:    token.String(),
 		Expires:  time.Now().Add(60 * 24 * time.Hour),
 		HttpOnly: true, // protection from man-in-the-middle attacks
 		Path: "/",

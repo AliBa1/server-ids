@@ -58,6 +58,7 @@ func TestCreateUser(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Len(t, db.Users, prevUsersLen+1)
+	assert.Contains(t, db.Users, newUser)
 }
 
 func TestUpdateUser(t *testing.T) {
@@ -97,10 +98,10 @@ func TestUpdateUser_NotFound(t *testing.T) {
 
 func TestAddLoginKey(t *testing.T) {
 	db := NewAuthDBMemory()
-	key := uuid.New()
+	token := uuid.New()
 	username := "funguy123"
-	db.AddLoginKey(key, username)
+	db.AddSessionToken(token, username)
 
-	assert.Contains(t, db.LoginKeys, key)
-	assert.Equal(t, db.LoginKeys[key], username)
+	assert.Contains(t, db.Sessions, token)
+	assert.Equal(t, db.Sessions[token], username)
 }

@@ -28,4 +28,4 @@ go.work.sum
 .air.toml
 
 # tmp folders
-/tmp/
+**/tmp/

@@ -1,35 +1,35 @@
 ### Run all tests from root dir
 
-```bash
+```zsh
 go test ./...
 ```
 
 ### Create and show coverage profile
 
-```bash
+```zsh
 go test ./... -coverprofile cover.out
 ```
 
 ### Show coverage for each function (in terminal)
 
-```bash
+```zsh
 go tool cover -func cover.out
 ```
 
 ### Show coverage for each function (in html)
 
-```bash
+```zsh
 go tool cover -html cover.out
 ```
 
 ### Create coverage profile on build
 
-```bash
+```zsh
 go build -cover
 ```
 
 ### Create coverage profile (specfic pkg)
 
-```bash
+```zsh
 go test -coverprofile=... <pkg_target>
 ```

@@ -11,14 +11,14 @@ import (
 // CRUD database
 
 type AuthDBMemory struct {
-	Users     []models.User
-	LoginKeys map[uuid.UUID]string
+	Users    []models.User
+	Sessions map[uuid.UUID]string
 }
 
 func NewAuthDBMemory() *AuthDBMemory {
 	return &AuthDBMemory{
-		Users:     mock.GetMockUsers(),
-		LoginKeys: map[uuid.UUID]string{},
+		Users:    mock.GetMockUsers(),
+		Sessions: map[uuid.UUID]string{},
 	}
 }
 
@@ -51,6 +51,6 @@ func (db *AuthDBMemory) UpdateUser(user models.User) error {
 	return fmt.Errorf("user '%s' not found", user.Username)
 }
 
-func (db *AuthDBMemory) AddLoginKey(key uuid.UUID, username string) {
-	db.LoginKeys[key] = username
+func (db *AuthDBMemory) AddSessionToken(token uuid.UUID, username string) {
+	db.Sessions[token] = username
 }

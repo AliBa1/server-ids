@@ -10,10 +10,10 @@ import (
 // handles buisness logic and calls database
 
 type AuthService struct {
-	db AuthDBMemory
+	db *AuthDBMemory
 }
 
-func NewAuthService(db AuthDBMemory) *AuthService {
+func NewAuthService(db *AuthDBMemory) *AuthService {
 	return &AuthService{db: db}
 }
 
@@ -35,9 +35,9 @@ func (s *AuthService) Login(username string, password string) (uuid.UUID, error)
 	}
 
 	// login successful, give session token
-	key := uuid.New()
-	s.db.AddLoginKey(key, username)
-	return key, nil
+	token := uuid.New()
+	s.db.AddSessionToken(token, username)
+	return token, nil
 }
 
 func (s *AuthService) Register(username string, password string) error {
@@ -52,8 +52,5 @@ func (s *AuthService) Register(username string, password string) error {
 
 func (s *AuthService) GetAllUsers() ([]models.User, error) {
 	users, err := s.db.GetAllUsers()
-	if err != nil {
-		return nil, err
-	}
-	return users, nil
+	return users, err
 }
