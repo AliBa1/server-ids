@@ -26,7 +26,7 @@ From there I would check for intrusions and decide to pass or not. From here I w
 detections and log them to a file for future reference. I also may expand it to prevent attacks by setting up
 firewalls based on what attack is detected to keep the server running wihtout any issues.
 On top of that I may also look to optimize the performance of the detection system by implementing the
-strategy design pattern to run checks for only for attacks that are possible with the incoming traffic.
+composite design pattern to run checks for only for attacks that are possible with the incoming traffic.
 I also may use multithreading to run the system faster which would allow the server to perform as best as it can.
 
 ## System Architecture (_will include network setup_)

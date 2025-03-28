@@ -15,11 +15,11 @@ func NewUserHandler(service *UserService) *UserHandler {
 	return &UserHandler{service: service}
 }
 
-func (h *UserHandler) UpdateRole(w http.ResponseWriter, req *http.Request) {
+func (h *UserHandler) UpdateRole(w http.ResponseWriter, r *http.Request) {
 	// add middleware to authorize before running
 	// track user who changed role?
-	username := req.FormValue("username")
-	newRole := req.FormValue("newRole")
+	username := r.FormValue("username")
+	newRole := r.FormValue("newRole")
 	if username == "" || newRole == "" {
 		http.Error(w, "Missing username or new role", http.StatusBadRequest)
 		return

@@ -16,7 +16,7 @@ func TestLogin(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, token)
-	assert.Equal(t, db.Sessions[token], username)
+	assert.Equal(t, username, db.Sessions[token])
 }
 
 // integration test: service and db interaction

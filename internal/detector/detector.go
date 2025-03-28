@@ -7,7 +7,7 @@ import (
 )
 
 type DetectionService interface {
-	Run(w http.ResponseWriter, req *http.Request, detector *Detector)
+	Run(w http.ResponseWriter, r *http.Request, detector *Detector)
 }
 
 type Detector struct {
@@ -19,9 +19,9 @@ func (d *Detector) AddService(service DetectionService) {
 	d.Services = append(d.Services, service)
 }
 
-func (d *Detector) Run(w http.ResponseWriter, req *http.Request) {
+func (d *Detector) Run(w http.ResponseWriter, r *http.Request) {
 	for _, service := range d.Services {
-		service.Run(w, req, d)
+		service.Run(w, r, d)
 	}
 
 	if len(d.Alerts) > 0 {

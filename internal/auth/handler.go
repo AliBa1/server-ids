@@ -17,13 +17,13 @@ func NewAuthHandler(service *AuthService) *AuthHandler {
 	return &AuthHandler{service: service}
 }
 
-func (h *AuthHandler) GetAuth(w http.ResponseWriter, req *http.Request) {
+func (h *AuthHandler) GetAuth(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Welcome to the auth service")
 }
 
-func (h *AuthHandler) PostLogin(w http.ResponseWriter, req *http.Request) {
-	username := req.FormValue("username")
-	password := req.FormValue("password")
+func (h *AuthHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
+	username := r.FormValue("username")
+	password := r.FormValue("password")
 	if username == "" || password == "" {
 		http.Error(w, "Missing username or password", http.StatusBadRequest)
 		return
@@ -46,9 +46,9 @@ func (h *AuthHandler) PostLogin(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(w, "Hello %s! You are now logged in.\n", username)
 }
 
-func (h *AuthHandler) PostRegister(w http.ResponseWriter, req *http.Request) {
-	username := req.FormValue("username")
-	password := req.FormValue("password")
+func (h *AuthHandler) PostRegister(w http.ResponseWriter, r *http.Request) {
+	username := r.FormValue("username")
+	password := r.FormValue("password")
 	if username == "" || password == "" {
 		http.Error(w, "Missing username or password", http.StatusBadRequest)
 		return
@@ -61,9 +61,9 @@ func (h *AuthHandler) PostRegister(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(w, "Welcome %s! Your account has been created\n", username)
 }
 
-func (h *AuthHandler) GetUsers(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintln(w, "Getting users from the database...")
-	fmt.Fprintln(w, "")
+func (h *AuthHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
+	// fmt.Fprintln(w, "Getting users from the database...")
+	// fmt.Fprintln(w, "")
 	users, err := h.service.GetAllUsers()
 
 	if err != nil {

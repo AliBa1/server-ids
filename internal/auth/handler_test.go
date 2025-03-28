@@ -19,19 +19,19 @@ func TestPostLogin(t *testing.T) {
 	formData.Set("username", "funguy123")
 	formData.Set("password", "admin12345")
 
-	req, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
+	r, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
 	if err != nil {
 		t.Error(err)
 	}
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	db := NewAuthDBMemory()
 	service := NewAuthService(db)
 	handler := NewAuthHandler(service)
-	handler.PostLogin(rr, req)
+	handler.PostLogin(rr, r)
 
-	assert.Equal(t, rr.Result().StatusCode, http.StatusOK)
+	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
 	defer rr.Result().Body.Close()
 
 	responseMsg, err := io.ReadAll(rr.Body)
@@ -46,19 +46,19 @@ func TestPostLogin_MissingPassword(t *testing.T) {
 	formData.Set("username", "notarealuser")
 	formData.Set("password", "")
 
-	req, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
+	r, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
 	if err != nil {
 		t.Error(err)
 	}
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	db := NewAuthDBMemory()
 	service := NewAuthService(db)
 	handler := NewAuthHandler(service)
-	handler.PostLogin(rr, req)
+	handler.PostLogin(rr, r)
 
-	assert.Equal(t, rr.Result().StatusCode, http.StatusBadRequest)
+	assert.Equal(t, http.StatusBadRequest, rr.Result().StatusCode)
 	defer rr.Result().Body.Close()
 }
 
@@ -69,19 +69,19 @@ func TestPostLogin_UserNotExist(t *testing.T) {
 	formData.Set("username", "notarealuser")
 	formData.Set("password", "admin12345")
 
-	req, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
+	r, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
 	if err != nil {
 		t.Error(err)
 	}
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	db := NewAuthDBMemory()
 	service := NewAuthService(db)
 	handler := NewAuthHandler(service)
-	handler.PostLogin(rr, req)
+	handler.PostLogin(rr, r)
 
-	assert.Equal(t, rr.Result().StatusCode, http.StatusBadRequest)
+	assert.Equal(t, http.StatusBadRequest, rr.Result().StatusCode)
 	defer rr.Result().Body.Close()
 }
 
@@ -92,19 +92,19 @@ func TestPostRegister(t *testing.T) {
 	formData.Set("username", "newuser")
 	formData.Set("password", "hiimanewuser")
 
-	req, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
+	r, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
 	if err != nil {
 		t.Error(err)
 	}
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	db := NewAuthDBMemory()
 	service := NewAuthService(db)
 	handler := NewAuthHandler(service)
-	handler.PostRegister(rr, req)
+	handler.PostRegister(rr, r)
 
-	assert.Equal(t, rr.Result().StatusCode, http.StatusOK)
+	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
 	defer rr.Result().Body.Close()
 
 	responseMsg, err := io.ReadAll(rr.Body)
@@ -119,19 +119,19 @@ func TestPostRegister_MissingPassword(t *testing.T) {
 	formData.Set("username", "newuser")
 	formData.Set("password", "")
 
-	req, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
+	r, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
 	if err != nil {
 		t.Error(err)
 	}
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	db := NewAuthDBMemory()
 	service := NewAuthService(db)
 	handler := NewAuthHandler(service)
-	handler.PostRegister(rr, req)
+	handler.PostRegister(rr, r)
 
-	assert.Equal(t, rr.Result().StatusCode, http.StatusBadRequest)
+	assert.Equal(t, http.StatusBadRequest, rr.Result().StatusCode)
 	defer rr.Result().Body.Close()
 
 	responseMsg, err := io.ReadAll(rr.Body)
@@ -146,19 +146,19 @@ func TestPostRegister_UserExists(t *testing.T) {
 	formData.Set("username", "funguy123")
 	formData.Set("password", "admin12345")
 
-	req, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
+	r, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
 	if err != nil {
 		t.Error(err)
 	}
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	db := NewAuthDBMemory()
 	service := NewAuthService(db)
 	handler := NewAuthHandler(service)
-	handler.PostRegister(rr, req)
+	handler.PostRegister(rr, r)
 
-	assert.Equal(t, rr.Result().StatusCode, http.StatusBadRequest)
+	assert.Equal(t, http.StatusBadRequest, rr.Result().StatusCode)
 	defer rr.Result().Body.Close()
 
 	responseMsg, err := io.ReadAll(rr.Body)
@@ -169,7 +169,7 @@ func TestPostRegister_UserExists(t *testing.T) {
 func TestGetUsersHandler(t *testing.T) {
 	rr := httptest.NewRecorder()
 
-	req, err := http.NewRequest(http.MethodPost, "/auth/users", nil)
+	r, err := http.NewRequest(http.MethodPost, "/auth/users", nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -177,9 +177,9 @@ func TestGetUsersHandler(t *testing.T) {
 	db := NewAuthDBMemory()
 	service := NewAuthService(db)
 	handler := NewAuthHandler(service)
-	handler.GetUsers(rr, req)
+	handler.GetUsers(rr, r)
 
-	assert.Equal(t, rr.Result().StatusCode, http.StatusOK)
+	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
 	defer rr.Result().Body.Close()
 
 	responseMsg, err := io.ReadAll(rr.Body)
@@ -190,7 +190,7 @@ func TestGetUsersHandler(t *testing.T) {
 func TestGetUsersHandler_NoUsers(t *testing.T) {
 	rr := httptest.NewRecorder()
 
-	req, err := http.NewRequest(http.MethodPost, "/auth/users", nil)
+	r, err := http.NewRequest(http.MethodPost, "/auth/users", nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -199,13 +199,14 @@ func TestGetUsersHandler_NoUsers(t *testing.T) {
 	db.Users = []models.User{}
 	service := NewAuthService(db)
 	handler := NewAuthHandler(service)
-	handler.GetUsers(rr, req)
+	handler.GetUsers(rr, r)
 
-	assert.Equal(t, rr.Result().StatusCode, http.StatusOK)
+	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
 	defer rr.Result().Body.Close()
 
 	responseMsg, err := io.ReadAll(rr.Body)
 	msgString := string(responseMsg)
 	assert.NoError(t, err)
-	assert.Equal(t, msgString, "Getting users from the database...\n\nThere are no users\n")
+	// assert.Equal(t, "Getting users from the database...\n\nThere are no users\n", msgString)
+	assert.Equal(t, "There are no users\n", msgString)
 }

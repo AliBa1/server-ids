@@ -28,13 +28,13 @@ func main() {
 	document.RegisterDocumentRoutes(r, middleware, documentService)
 
 	// delete
-	r.HandleFunc("/", middleware.ApplyMiddleware(func(w http.ResponseWriter, req *http.Request) {
+	r.HandleFunc("/", middleware.ApplyMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "Welcome to the server\n")
 	}))
 
 	// delete
-	r.HandleFunc("/welcome/{user}", middleware.ApplyMiddleware(func(w http.ResponseWriter, req *http.Request) {
-		vars := mux.Vars(req)
+	r.HandleFunc("/welcome/{user}", middleware.ApplyMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
 		user := vars["user"]
 		fmt.Fprintf(w, "Hi, %s! Hope your having a good day!\n", user)
 	}))

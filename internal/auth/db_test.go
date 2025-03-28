@@ -76,8 +76,8 @@ func TestUpdateUser(t *testing.T) {
 
 	assert.NoError(t, err)
 	// replace with id if using id for users
-	assert.Equal(t, user.Username, updatedUser.Username)
-	assert.NotEqual(t, user, updatedUser)
+	assert.Equal(t, updatedUser.Username, user.Username)
+	assert.NotEqual(t, updatedUser, user)
 	assert.Contains(t, db.Users, updatedUser)
 }
 
