@@ -4,8 +4,11 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"strings"
 	"testing"
 
+	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,54 +34,58 @@ func TestGetDocsHandler(t *testing.T) {
 	assert.NotEmpty(t, responseMsg)
 }
 
-// // integration test: HTTP, service, and db interaction
-// func TestGetDocHandler(t *testing.T) {
-// 	rr := httptest.NewRecorder()
+// integration test: HTTP, service, and db interaction
+func TestGetDocHandler(t *testing.T) {
+	rr := httptest.NewRecorder()
 
-// 	r, err := http.NewRequest(http.MethodGet, "/docs/Onboarding%20Document", nil)
-// 	log.Printf("Path: %s", r.URL.Path)
+	r, err := http.NewRequest(http.MethodGet, "/docs/Onboarding%20Document", nil)
+	if err != nil {
+		t.Error(err)
+	}
 
-// 	if err != nil {
-// 		t.Error(err)
-// 	}
+	db := NewDocsDBMemory()
+	service := NewDocsService(db)
+	handler := NewDocsHandler(service)
 
-// 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	// use this if there are route variables
+	router := mux.NewRouter()
+	router.HandleFunc("/docs/{title}", handler.GetDoc).Methods("GET")
+	router.ServeHTTP(rr, r)
 
-// 	db := NewDocsDBMemory()
-// 	service := NewDocsService(db)
-// 	handler := NewDocsHandler(service)
-// 	handler.GetDoc(rr, r)
+	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
+	defer rr.Result().Body.Close()
 
-// 	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
-// 	defer rr.Result().Body.Close()
+	responseMsg, err := io.ReadAll(rr.Body)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, responseMsg)
+}
 
-// 	responseMsg, err := io.ReadAll(rr.Body)
-// 	assert.NoError(t, err)
-// 	assert.NotEmpty(t, responseMsg)
-// }
+// integration test: HTTP, service, and db interaction
+func TestGetDocHandler_NotFound(t *testing.T) {
+	rr := httptest.NewRecorder()
+	formData := url.Values{}
+	formData.Set("title", "This Doesn't Exist")
 
-// // integration test: HTTP, service, and db interaction
-// func TestGetDocHandler_NotFound(t *testing.T) {
-// 	rr := httptest.NewRecorder()
-// 	formData := url.Values{}
-// 	formData.Set("title", "This Doesn't Exist")
+	r, err := http.NewRequest(http.MethodGet, "/docs/NonExistant", strings.NewReader(formData.Encode()))
+	if err != nil {
+		t.Error(err)
+	}
 
-// 	r, err := http.NewRequest(http.MethodGet, "/docs/HTTHTHT/", strings.NewReader(formData.Encode()))
-// 	if err != nil {
-// 		t.Error(err)
-// 	}
+	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-// 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	db := NewDocsDBMemory()
+	service := NewDocsService(db)
+	handler := NewDocsHandler(service)
 
-// 	db := NewDocsDBMemory()
-// 	service := NewDocsService(db)
-// 	handler := NewDocsHandler(service)
-// 	handler.GetDoc(rr, r)
+	// use this if there are route variables
+	router := mux.NewRouter()
+	router.HandleFunc("/docs/{title}", handler.GetDoc).Methods("GET")
+	router.ServeHTTP(rr, r)
 
-// 	assert.Equal(t, http.StatusInternalServerError, rr.Result().StatusCode)
-// 	defer rr.Result().Body.Close()
+	assert.Equal(t, http.StatusInternalServerError, rr.Result().StatusCode)
+	defer rr.Result().Body.Close()
 
-// 	responseMsg, err := io.ReadAll(rr.Body)
-// 	assert.NoError(t, err)
-// 	assert.Equal(t, "document titled 'This Doesn't Exist' not found\n", string(responseMsg))
-// }
+	responseMsg, err := io.ReadAll(rr.Body)
+	assert.NoError(t, err)
+	assert.Equal(t, "document titled 'NonExistant' not found\n", string(responseMsg))
+}

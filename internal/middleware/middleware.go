@@ -14,7 +14,7 @@ func NewMiddleware() *Middleware {
 	m := &Middleware{}
 	m.addToChain(m.Logger)
 	// m.addToChain(m.Authorization)
-	m.addToChain(m.IDS)
+	// m.addToChain(m.IDS)
 	return m
 }
 
