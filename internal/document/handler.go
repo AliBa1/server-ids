@@ -21,7 +21,7 @@ func (h *DocsHandler) GetDocs(w http.ResponseWriter, r *http.Request) {
 
 	var docs []models.Document
 	var err error
-	docs, err = h.service.GetAllDocs()
+	docs, err = h.service.GetDocs()
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

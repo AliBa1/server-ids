@@ -17,7 +17,7 @@ func NewDocsService(db *DocsDBMemory) *DocsService {
 	return &DocsService{db: db}
 }
 
-func (d *DocsService) GetAllDocs() ([]models.Document, error) {
+func (d *DocsService) GetDocs() ([]models.Document, error) {
 	docs, err := d.db.GetAllDocs()
 	return docs, err
 }
