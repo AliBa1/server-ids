@@ -3,6 +3,8 @@ package user
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 // handle HTTP requests can call services
@@ -18,16 +20,20 @@ func NewUserHandler(service *UserService) *UserHandler {
 func (h *UserHandler) UpdateRole(w http.ResponseWriter, r *http.Request) {
 	// add middleware to authorize before running
 	// track user who changed role?
-	username := r.FormValue("username")
+	vars := mux.Vars(r)
+	username := vars["username"]
 	newRole := r.FormValue("newRole")
+
 	if username == "" || newRole == "" {
 		http.Error(w, "Missing username or new role", http.StatusBadRequest)
 		return
 	}
+
 	err := h.service.UpdateRole(username, newRole)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	fmt.Fprintf(w, "%s now has the %s role\n", username, newRole)
 }
