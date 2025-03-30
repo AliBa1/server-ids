@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetDocsDB(t *testing.T) {
+func TestGetDocs(t *testing.T) {
 	db := NewDocsDBMemory()
 	docs, err := db.GetAllDocs()
 

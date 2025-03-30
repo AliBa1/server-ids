@@ -7,7 +7,7 @@ import (
 )
 
 // integration test: service and db interaction
-func TestGetDocs(t *testing.T) {
+func TestGetDocsService(t *testing.T) {
 	db := NewDocsDBMemory()
 	service := NewDocsService(db)
 	docs, err := service.GetDocs()
@@ -16,12 +16,22 @@ func TestGetDocs(t *testing.T) {
 	assert.NotEmpty(t, docs)
 }
 
-// func TestDisplayDocs(t *testing.T) {
-// 	db := NewDocsDBMemory()
-// 	service := NewDocsService(db)
-// 	docs, err := service.GetDocs()
-// 	err = service.DisplayDocs(docs)
+// integration test: service and db interaction
+func TestGetDocService(t *testing.T)  {
+	db := NewDocsDBMemory()
+	service := NewDocsService(db)
+	doc, err := service.GetDoc("Top Secret Case Study #1")
 
-// 	assert.NoError(t, err)
-// }
+	assert.NoError(t, err)
+	assert.NotEmpty(t, doc)
+}
 
+// integration test: service and db interaction
+func TestGetDocService_NotFound(t *testing.T)  {
+	db := NewDocsDBMemory()
+	service := NewDocsService(db)
+	doc, err := service.GetDoc("Does Not Exist")
+
+	assert.Error(t, err)
+	assert.Empty(t, doc)
+}
