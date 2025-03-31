@@ -19,7 +19,6 @@ func TestUpdateRoleHandler(t *testing.T) {
 	formData := url.Values{}
 	formData.Set("newRole", "admin")
 
-	// r, err := http.NewRequest(http.MethodPut, "/user/update-role", strings.NewReader(formData.Encode()))
 	r, err := http.NewRequest(http.MethodPatch, "/users/patrick/role", strings.NewReader(formData.Encode()))
 	if err != nil {
 		t.Error(err)
