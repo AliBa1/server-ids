@@ -15,7 +15,6 @@ type SQLDetection struct {
 
 func (s *SQLDetection) Run(w http.ResponseWriter, r *http.Request, detector *Detector) (bool, error) {
 	// use a switch case most likely
-	// rules, err := regexp.Compile("(?i)('|;|--|/*|.*/|=|and|or|sleep|union|drop|order|select|insert|update|delete|exec|from|where|having)")
 	rules, err := regexp.Compile(`(?i)('|;|--|/\*|\*/|=|\b(and|or|sleep|union|drop|order|select|insert|update|delete|exec|from|where|having)\b)`)
 
 	if err != nil {
@@ -39,23 +38,23 @@ func (s *SQLDetection) Run(w http.ResponseWriter, r *http.Request, detector *Det
 		found = true
 	}
 
-	// check all header values
-	for name, values := range r.Header {
-		for _, value := range values {
-			if rules.MatchString(value) {
-				msg := "detected in  HTTP header " + name + ": " + value
-				detector.AddAlert("warning", "SQL Injection", msg, ip)
-				found = true
-			}
-		}
-	}
-
 	// check cookies
 	for _, cookie := range r.Cookies() {
 		if rules.MatchString(cookie.String()) {
 			msg := "detected in cookie: " + cookie.String()
 			detector.AddAlert("warning", "SQL Injection", msg, ip)
 			found = true
+		}
+	}
+
+	// check all header values
+	for name, values := range r.Header {
+		for _, value := range values {
+			if rules.MatchString(value) {
+				msg := "detected in HTTP header " + name + ": " + value
+				detector.AddAlert("warning", "SQL Injection", msg, ip)
+				found = true
+			}
 		}
 	}
 
