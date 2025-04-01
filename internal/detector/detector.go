@@ -15,6 +15,10 @@ type Detector struct {
 	Alerts   []Alert
 }
 
+func NewDetector() *Detector {
+	return &Detector{}
+}
+
 func (d *Detector) AddService(service DetectionService) {
 	d.Services = append(d.Services, service)
 }
