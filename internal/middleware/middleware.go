@@ -10,6 +10,7 @@ type Middleware struct {
 	chain []func(http.HandlerFunc) http.HandlerFunc
 }
 
+// runs in reverse order
 func NewMiddleware() *Middleware {
 	m := &Middleware{}
 	m.addToChain(m.Logger)
@@ -55,6 +56,7 @@ func (middleware *Middleware) Authorization(next http.HandlerFunc) http.HandlerF
 	}
 }
 
+// run before authorization
 func (middleware *Middleware) IDS(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Composite design pattern

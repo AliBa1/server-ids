@@ -6,7 +6,7 @@ import (
 )
 
 type Alert struct {
-	Severity   string
+	Severity   string // "low", "medium", "high"
 	AttackType string
 	Time       time.Time
 	Message    string

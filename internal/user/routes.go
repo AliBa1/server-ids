@@ -10,8 +10,5 @@ func RegisterUserRoutes(r *mux.Router, m *middleware.Middleware, service *UserSe
 	handler := NewUserHandler(service)
 
 	// r.HandleFunc("/user", m.ApplyMiddleware(handler.GetUser)).Methods("GET")
-
-	// r.HandleFunc("/user/update-role", m.ApplyMiddleware(handler.UpdateRole)).Methods("PUT")
-	// change vvv to "/users/{username}/role" and make it PATCH instead of PUT
 	r.HandleFunc("/users/{username}/role", m.ApplyMiddleware(handler.UpdateRole)).Methods("PATCH")
 }

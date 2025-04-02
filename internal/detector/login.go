@@ -3,7 +3,8 @@ package detector
 import "net/http"
 
 type LoginAttackDetection struct {
-	// rules []string
+	// honeypot vvvv
+	// failedAttempts []string
 }
 
 
