@@ -2,7 +2,7 @@
 
 Network Intrusion Detection System prototype for a REST API using HTTP
 
-[![Coverage](https://img.shields.io/badge/Coverage-70.1%25-yellow)](https://github.com/AliBa1/server-ids/actions)
+[![Coverage](https://img.shields.io/badge/Coverage-73.6%25-yellow)](https://github.com/AliBa1/server-ids/actions)
 
 ## Abstract
 
