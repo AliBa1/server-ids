@@ -6,11 +6,12 @@ import (
 )
 
 type Alert struct {
-	Severity   string // "low", "medium", "high"
-	AttackType string
-	Time       time.Time
-	Message    string
-	SourceIP   net.IP
+	SignatureID int
+	Severity    string // "low", "medium", "high"
+	AttackType  string
+	Time        time.Time
+	Message     string
+	SourceIP    net.IP
 }
 
 func (alert *Alert) SendEmail() {
