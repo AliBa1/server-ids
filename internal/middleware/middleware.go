@@ -1,9 +1,10 @@
 package middleware
 
 import (
-	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 type Middleware struct {
@@ -41,17 +42,24 @@ func (middleware *Middleware) Logger(next http.HandlerFunc) http.HandlerFunc {
 }
 
 // incomplete
-func (middleware *Middleware) Authorization(next http.HandlerFunc) http.HandlerFunc {
+func (middleware *Middleware) Authorization(next http.HandlerFunc, sessions map[uuid.UUID]string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// key, err := r.Cookie("session_key")
-		_, err := r.Cookie("session_key")
+		keyCookie, err := r.Cookie("session_key")
 		if err != nil {
-			fmt.Printf("Unauthorized attempt on %s - Error: %s\n", r.URL.Path, err)
 			http.Error(w, "Unauthorized: Login to gain access to this route", http.StatusUnauthorized)
 			return
 		}
 
-		// check if key valid
+		key, err := uuid.Parse(keyCookie.Value)
+		if err != nil {
+			http.Error(w, "Unauthorized: Login to gain access to this route", http.StatusUnauthorized)
+			return
+		}
+
+		if sessions[key] == "" {
+			http.Error(w, "Unauthorized: Login to gain access to this route", http.StatusUnauthorized)
+			return
+		}
 		next(w, r)
 	}
 }

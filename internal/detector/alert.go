@@ -26,6 +26,10 @@ func (alert *Alert) LogToConsole() {
 	// log.Printf("jj")
 }
 
+func (alert *Alert) LogToFile() {
+	
+}
+
 func (alert *Alert) WriteToUser() {
 
 }
