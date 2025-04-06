@@ -25,7 +25,7 @@ func main() {
 
 	docsDB := document.NewDocsDBMemory()
 	documentService := document.NewDocsService(docsDB)
-	document.RegisterDocumentRoutes(r, middleware, documentService)
+	document.RegisterDocumentRoutes(r, middleware, documentService, authDB)
 
 	// delete
 	r.HandleFunc("/", middleware.ApplyMiddleware(func(w http.ResponseWriter, r *http.Request) {

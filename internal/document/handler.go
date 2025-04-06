@@ -3,7 +3,9 @@ package document
 import (
 	"fmt"
 	"net/http"
+	"server-ids/internal/auth"
 	"server-ids/internal/models"
+	"server-ids/internal/utils"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -11,10 +13,11 @@ import (
 
 type DocsHandler struct {
 	service *DocsService
+	authDB  *auth.AuthDBMemory
 }
 
-func NewDocsHandler(service *DocsService) *DocsHandler {
-	return &DocsHandler{service: service}
+func NewDocsHandler(service *DocsService, authDB *auth.AuthDBMemory) *DocsHandler {
+	return &DocsHandler{service: service, authDB: authDB}
 }
 
 func (h *DocsHandler) GetDocs(w http.ResponseWriter, r *http.Request) {
@@ -57,6 +60,11 @@ func (h *DocsHandler) GetDoc(w http.ResponseWriter, r *http.Request) {
 	doc, err = h.service.GetDoc(title)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if doc.IsLocked && !utils.IsUserLoggedIn(r, h.authDB.Sessions) {
+		http.Error(w, "Unauthorized: Login to gain access to this route", http.StatusUnauthorized)
 		return
 	}
 

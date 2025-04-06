@@ -10,5 +10,5 @@ func RegisterUserRoutes(r *mux.Router, m *middleware.Middleware, service *UserSe
 	handler := NewUserHandler(service)
 
 	// r.HandleFunc("/user", m.ApplyMiddleware(handler.GetUser)).Methods("GET")
-	r.HandleFunc("/users/{username}/role", m.ApplyMiddleware(handler.UpdateRole)).Methods("PATCH")
+	r.HandleFunc("/users/{username}/role", m.Authorization(m.ApplyMiddleware(handler.UpdateRole), handler.service.db.Sessions)).Methods("PATCH")
 }
