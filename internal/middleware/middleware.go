@@ -1,28 +1,28 @@
 package middleware
 
 import (
+	"fmt"
 	"log"
 	"net/http"
-	"server-ids/internal/utils"
-
-	"github.com/google/uuid"
+	"server-ids/internal/sessions"
 )
 
 type Middleware struct {
-	chain []func(http.HandlerFunc) http.HandlerFunc
+	chain      []func(http.HandlerFunc) http.HandlerFunc
+	sessionsDB *sessions.SessionsDB
 }
 
 // runs in reverse order
-func NewMiddleware() *Middleware {
-	m := &Middleware{}
+func NewMiddleware(sDB *sessions.SessionsDB) *Middleware {
+	m := &Middleware{sessionsDB: sDB}
 	m.addToChain(m.Logger)
 	// m.addToChain(m.Authorization)
 	// m.addToChain(m.IDS)
 	return m
 }
 
-func (middleware *Middleware) addToChain(newMiddleware func(http.HandlerFunc) http.HandlerFunc) {
-	middleware.chain = append([]func(http.HandlerFunc) http.HandlerFunc{newMiddleware}, middleware.chain...)
+func (m *Middleware) addToChain(newMiddleware func(http.HandlerFunc) http.HandlerFunc) {
+	m.chain = append([]func(http.HandlerFunc) http.HandlerFunc{newMiddleware}, m.chain...)
 }
 
 func (middleware *Middleware) ApplyMiddleware(handler http.HandlerFunc) http.HandlerFunc {
@@ -32,7 +32,7 @@ func (middleware *Middleware) ApplyMiddleware(handler http.HandlerFunc) http.Han
 	return handler
 }
 
-func (middleware *Middleware) Logger(next http.HandlerFunc) http.HandlerFunc {
+func (m *Middleware) Logger(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		url := r.URL.Path
 		httpMethod := r.Method
@@ -42,10 +42,12 @@ func (middleware *Middleware) Logger(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (middleware *Middleware) Authorization(next http.HandlerFunc, sessions map[uuid.UUID]string) http.HandlerFunc {
+func (m *Middleware) Authorization(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !utils.IsUserLoggedIn(r, sessions) {
+		if !m.sessionsDB.IsUserLoggedIn(r) {
+			fmt.Println("2222222")
 			http.Error(w, "Unauthorized: Login to gain access to this route", http.StatusUnauthorized)
+			fmt.Println("e333333333")
 			return
 		}
 
@@ -54,7 +56,7 @@ func (middleware *Middleware) Authorization(next http.HandlerFunc, sessions map[
 }
 
 // run before authorization
-func (middleware *Middleware) IDS(next http.HandlerFunc) http.HandlerFunc {
+func (m *Middleware) IDS(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Composite design pattern
 

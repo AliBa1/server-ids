@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"server-ids/internal/sessions"
 	"strings"
 	"testing"
 
@@ -23,7 +24,8 @@ func TestLogger(t *testing.T) {
 		w.Write([]byte("OK"))
 	})
 
-	middleware := &Middleware{}
+	sessionsDB := sessions.NewSessionsDB()
+	middleware := &Middleware{sessionsDB: sessionsDB}
 	wrappedHandler := middleware.Logger(testHandler)
 
 	var logOutput strings.Builder
@@ -38,8 +40,9 @@ func TestLogger(t *testing.T) {
 }
 
 func TestAuthorization(t *testing.T) {
+	sessionsDB := sessions.NewSessionsDB()
 	sessionId := uuid.New()
-	sessions := map[uuid.UUID]string{sessionId: "funguy123"}
+	sessionsDB.AddSession(sessionId, "funguy123")
 
 	r, err := http.NewRequest(http.MethodGet, "/testing", nil)
 	if err != nil {
@@ -54,16 +57,17 @@ func TestAuthorization(t *testing.T) {
 		w.Write([]byte("OK"))
 	})
 
-	middleware := &Middleware{}
-	wrappedHandler := middleware.Authorization(testHandler, sessions)
+	middleware := &Middleware{sessionsDB: sessionsDB}
+	wrappedHandler := middleware.Authorization(testHandler)
 	wrappedHandler.ServeHTTP(rr, r)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
 }
 
 func TestAuthorization_Unauthorized(t *testing.T) {
-	// sessionId := uuid.New()
-	sessions := map[uuid.UUID]string{}
+	sessionsDB := sessions.NewSessionsDB()
+	sessionId := uuid.New()
+	sessionsDB.AddSession(sessionId, "funguy123")
 
 	r, err := http.NewRequest(http.MethodGet, "/testing", nil)
 	if err != nil {
@@ -76,8 +80,8 @@ func TestAuthorization_Unauthorized(t *testing.T) {
 		w.Write([]byte("OK"))
 	})
 
-	middleware := &Middleware{}
-	wrappedHandler := middleware.Authorization(testHandler, sessions)
+	middleware := &Middleware{sessionsDB: sessionsDB}
+	wrappedHandler := middleware.Authorization(testHandler)
 	wrappedHandler.ServeHTTP(rr, r)
 
 	assert.Equal(t, http.StatusUnauthorized, rr.Code)

@@ -4,21 +4,20 @@ import (
 	"fmt"
 	"server-ids/internal/mock"
 	"server-ids/internal/models"
-
-	"github.com/google/uuid"
+	"server-ids/internal/sessions"
 )
 
 // CRUD database
 
 type AuthDBMemory struct {
-	Users    []models.User
-	Sessions map[uuid.UUID]string
+	Users      []models.User
+	SessionsDB *sessions.SessionsDB
 }
 
-func NewAuthDBMemory() *AuthDBMemory {
+func NewAuthDBMemory(sDB *sessions.SessionsDB) *AuthDBMemory {
 	return &AuthDBMemory{
-		Users:    mock.GetMockUsers(),
-		Sessions: map[uuid.UUID]string{},
+		Users:      mock.GetMockUsers(),
+		SessionsDB: sDB,
 	}
 }
 
@@ -51,6 +50,6 @@ func (db *AuthDBMemory) UpdateUser(user models.User) error {
 	return fmt.Errorf("user '%s' not found", user.Username)
 }
 
-func (db *AuthDBMemory) AddSessionToken(token uuid.UUID, username string) {
-	db.Sessions[token] = username
-}
+// func (db *AuthDBMemory) AddSessionToken(token uuid.UUID, username string) {
+// 	db.Sessions[token] = username
+// }

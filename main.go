@@ -7,6 +7,7 @@ import (
 	"server-ids/internal/auth"
 	"server-ids/internal/document"
 	"server-ids/internal/middleware"
+	"server-ids/internal/sessions"
 	"server-ids/internal/user"
 
 	"github.com/gorilla/mux"
@@ -14,9 +15,11 @@ import (
 
 func main() {
 	r := mux.NewRouter()
-	middleware := middleware.NewMiddleware()
+	sessionsDB := sessions.NewSessionsDB()
 
-	authDB := auth.NewAuthDBMemory()
+	middleware := middleware.NewMiddleware(sessionsDB)
+
+	authDB := auth.NewAuthDBMemory(sessionsDB)
 	authService := auth.NewAuthService(authDB)
 	auth.RegisterAuthRoutes(r, middleware, authService)
 
@@ -25,19 +28,7 @@ func main() {
 
 	docsDB := document.NewDocsDBMemory()
 	documentService := document.NewDocsService(docsDB)
-	document.RegisterDocumentRoutes(r, middleware, documentService, authDB)
-
-	// delete
-	r.HandleFunc("/", middleware.ApplyMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, "Welcome to the server\n")
-	}))
-
-	// delete
-	r.HandleFunc("/welcome/{user}", middleware.ApplyMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		user := vars["user"]
-		fmt.Fprintf(w, "Hi, %s! Hope your having a good day!\n", user)
-	}))
+	document.RegisterDocumentRoutes(r, middleware, documentService, sessionsDB)
 
 	fmt.Println("Listening on port 8080")
 	err := http.ListenAndServe(":8080", r)

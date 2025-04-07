@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"server-ids/internal/models"
+	"server-ids/internal/sessions"
 	"strings"
 	"testing"
 
@@ -26,7 +27,8 @@ func TestPostLogin(t *testing.T) {
 
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	db := NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
+	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
 	handler := NewAuthHandler(service)
 	handler.PostLogin(rr, r)
@@ -53,7 +55,8 @@ func TestPostLogin_MissingPassword(t *testing.T) {
 
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	db := NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
+	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
 	handler := NewAuthHandler(service)
 	handler.PostLogin(rr, r)
@@ -76,7 +79,8 @@ func TestPostLogin_UserNotExist(t *testing.T) {
 
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	db := NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
+	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
 	handler := NewAuthHandler(service)
 	handler.PostLogin(rr, r)
@@ -99,7 +103,8 @@ func TestPostRegister(t *testing.T) {
 
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	db := NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
+	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
 	handler := NewAuthHandler(service)
 	handler.PostRegister(rr, r)
@@ -126,7 +131,8 @@ func TestPostRegister_MissingPassword(t *testing.T) {
 
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	db := NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
+	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
 	handler := NewAuthHandler(service)
 	handler.PostRegister(rr, r)
@@ -153,7 +159,8 @@ func TestPostRegister_UserExists(t *testing.T) {
 
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	db := NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
+	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
 	handler := NewAuthHandler(service)
 	handler.PostRegister(rr, r)
@@ -174,7 +181,8 @@ func TestGetUsersHandler(t *testing.T) {
 		t.Error(err)
 	}
 
-	db := NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
+	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
 	handler := NewAuthHandler(service)
 	handler.GetUsers(rr, r)
@@ -195,7 +203,8 @@ func TestGetUsersHandler_NoUsers(t *testing.T) {
 		t.Error(err)
 	}
 
-	db := NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
+	db := NewAuthDBMemory(sessionsDB)
 	db.Users = []models.User{}
 	service := NewAuthService(db)
 	handler := NewAuthHandler(service)

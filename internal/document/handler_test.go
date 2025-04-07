@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"server-ids/internal/auth"
+	"server-ids/internal/sessions"
 	"strings"
 	"testing"
 
@@ -23,9 +23,9 @@ func TestGetDocsHandler(t *testing.T) {
 	}
 
 	db := NewDocsDBMemory()
-	authDB := auth.NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
 	service := NewDocsService(db)
-	handler := NewDocsHandler(service, authDB)
+	handler := NewDocsHandler(service, sessionsDB)
 	handler.GetDocs(rr, r)
 
 	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
@@ -46,9 +46,9 @@ func TestGetDocHandler(t *testing.T) {
 	}
 
 	db := NewDocsDBMemory()
-	authDB := auth.NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
 	service := NewDocsService(db)
-	handler := NewDocsHandler(service, authDB)
+	handler := NewDocsHandler(service, sessionsDB)
 
 	// use this if there are route variables
 	router := mux.NewRouter()
@@ -73,9 +73,9 @@ func TestGetDocHandler_NotLoggedIn(t *testing.T) {
 	}
 
 	db := NewDocsDBMemory()
-	authDB := auth.NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
 	service := NewDocsService(db)
-	handler := NewDocsHandler(service, authDB)
+	handler := NewDocsHandler(service, sessionsDB)
 
 	// use this if there are route variables
 	router := mux.NewRouter()
@@ -104,9 +104,9 @@ func TestGetDocHandler_NotFound(t *testing.T) {
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	db := NewDocsDBMemory()
-	authDB := auth.NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
 	service := NewDocsService(db)
-	handler := NewDocsHandler(service, authDB)
+	handler := NewDocsHandler(service, sessionsDB)
 
 	// use this if there are route variables
 	router := mux.NewRouter()

@@ -7,22 +7,22 @@ import (
 // handles buisness logic and calls database
 
 type UserService struct {
-	db *auth.AuthDBMemory
+	authDB *auth.AuthDBMemory
 }
 
-func NewUserService(db *auth.AuthDBMemory) *UserService {
-	return &UserService{db: db}
+func NewUserService(authDB *auth.AuthDBMemory) *UserService {
+	return &UserService{authDB: authDB}
 }
 
 func (u *UserService) UpdateRole(username string, newRole string) error {
-	selectedUser, err := u.db.GetUser(username)
+	selectedUser, err := u.authDB.GetUser(username)
 	if err != nil {
 		return err
 	}
 
 	selectedUser.Role = newRole
 
-	err = u.db.UpdateUser(*selectedUser)
+	err = u.authDB.UpdateUser(*selectedUser)
 	if err != nil {
 		return err
 	}

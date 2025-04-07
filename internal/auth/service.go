@@ -36,7 +36,7 @@ func (s *AuthService) Login(username string, password string) (uuid.UUID, error)
 
 	// login successful, give session token
 	token := uuid.New()
-	s.db.AddSessionToken(token, username)
+	s.db.SessionsDB.AddSession(token, username)
 	return token, nil
 }
 

@@ -9,6 +9,7 @@ import (
 
 // Broken Access Control detection
 type BACDetection struct {
+	// sessionsDB *sessions.SessionsDB
 }
 
 func (s *BACDetection) Run(w http.ResponseWriter, r *http.Request, detector *Detector) (bool, error) {
@@ -25,11 +26,13 @@ func (s *BACDetection) Run(w http.ResponseWriter, r *http.Request, detector *Det
 	if strings.Contains(decodedURL, "/role") {
 		// if the user trying to change the role is not an admin or logged in
 
+		// if not logged in
+		// if !s.sessionsDB.IsUserLoggedIn(r) {
+		// 	// msg := "unauthenticated person tried to change " + urlUsername + "'s role from a " + urlUserRole + " to a " + urlRole
+		// }
+
 		// if not an admin
 		// msg := username + "tried to change " + urlUsername + "'s role from a " + urlUserRole + " to a " + urlRole
-
-		// if not logged in
-		// msg := "unauthenticated person tried to change " + urlUsername + "'s role from a " + urlUserRole + " to a " + urlRole
 
 		// detector.AddAlert("high", "Broken Access Control", msg, ip)
 		found = true

@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"server-ids/internal/sessions"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -8,7 +9,8 @@ import (
 
 // integration test: service and db interaction
 func TestLogin(t *testing.T) {
-	db := NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
+	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
 	username := "funguy123"
 	password := "admin12345"
@@ -16,12 +18,13 @@ func TestLogin(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, token)
-	assert.Equal(t, username, db.Sessions[token])
+	assert.Equal(t, username, db.SessionsDB.Sessions[token])
 }
 
 // integration test: service and db interaction
 func TestLogin_InvalidUser(t *testing.T) {
-	db := NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
+	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
 	username := "notarealuser"
 	password := "admin12345"
@@ -29,12 +32,13 @@ func TestLogin_InvalidUser(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Empty(t, token)
-	assert.Empty(t, db.Sessions[token])
+	assert.Empty(t, db.SessionsDB.Sessions[token])
 }
 
 // integration test: service and db interaction
 func TestLogin_WrongPassword(t *testing.T) {
-	db := NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
+	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
 	username := "funguy123"
 	password := "wrongpassword"
@@ -42,13 +46,14 @@ func TestLogin_WrongPassword(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Empty(t, token)
-	assert.Empty(t, db.Sessions[token])
+	assert.Empty(t, db.SessionsDB.Sessions[token])
 	// add checker for failed login attempts updated
 }
 
 // integration test: service and db interaction
 func TestRegister(t *testing.T) {
-	db := NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
+	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
 	dbUsersLen := len(db.Users)
 	// test working pass by reference
@@ -65,7 +70,8 @@ func TestRegister(t *testing.T) {
 
 // integration test: service and db interaction
 func TestRegister_UsernameTaken(t *testing.T) {
-	db := NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
+	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
 	dbUsersLen := len(db.Users)
 	// test working pass by reference
@@ -82,7 +88,8 @@ func TestRegister_UsernameTaken(t *testing.T) {
 
 // integration test: service and db interaction
 func TestGetUsersService(t *testing.T) {
-	db := NewAuthDBMemory()
+	sessionsDB := sessions.NewSessionsDB()
+	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
 	users, err := service.GetAllUsers()
 

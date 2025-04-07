@@ -2,6 +2,7 @@ package user
 
 import (
 	"server-ids/internal/auth"
+	"server-ids/internal/sessions"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,13 +10,14 @@ import (
 
 // integration test: service and db interaction
 func TestUpdateRole(t *testing.T) {
-	authdb := auth.NewAuthDBMemory()
-	service := NewUserService(authdb)
+	sessionsDB := sessions.NewSessionsDB()
+	authDB := auth.NewAuthDBMemory(sessionsDB)
+	service := NewUserService(authDB)
 	err := service.UpdateRole("patrick", "admin")
 
 	assert.NoError(t, err)
-	
-	patrick, err := authdb.GetUser("patrick")
+
+	patrick, err := authDB.GetUser("patrick")
 	assert.Equal(t, "admin", patrick.Role)
 	assert.NoError(t, err)
 }

@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"server-ids/internal/auth"
+	"server-ids/internal/sessions"
 	"strings"
 	"testing"
 
@@ -26,8 +27,9 @@ func TestUpdateRoleHandler(t *testing.T) {
 
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	authdb := auth.NewAuthDBMemory()
-	service := NewUserService(authdb)
+	sessionsDB := sessions.NewSessionsDB()
+	authDB := auth.NewAuthDBMemory(sessionsDB)
+	service := NewUserService(authDB)
 	handler := NewUserHandler(service)
 
 	// use this if there are route variables
@@ -56,8 +58,9 @@ func TestUpdateRoleHandler_NoUser(t *testing.T) {
 
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	authdb := auth.NewAuthDBMemory()
-	service := NewUserService(authdb)
+	sessionsDB := sessions.NewSessionsDB()
+	authDB := auth.NewAuthDBMemory(sessionsDB)
+	service := NewUserService(authDB)
 	handler := NewUserHandler(service)
 
 	// use this if there are route variables
@@ -73,4 +76,3 @@ func TestUpdateRoleHandler_NoUser(t *testing.T) {
 	assert.NotEmpty(t, responseMsg)
 	assert.Equal(t, "Missing username or new role\n", string(responseMsg))
 }
-
