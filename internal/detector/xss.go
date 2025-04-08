@@ -28,7 +28,7 @@ func checkXSS(s string) bool {
 	return false
 }
 
-func (x *XSSDetection) Run(w http.ResponseWriter, r *http.Request, detector *Detector) (bool, error) {
+func (x *XSSDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) (bool, error) {
 	found := false
 	rawIP, _, _ := net.SplitHostPort(r.RemoteAddr)
 	ip := net.ParseIP(rawIP)
@@ -42,7 +42,7 @@ func (x *XSSDetection) Run(w http.ResponseWriter, r *http.Request, detector *Det
 	if checkXSS(decodedURL) {
 		fmt.Println("Checking URL:", decodedURL)
 		msg := "detected in url path: " + decodedURL
-		detector.AddAlert(5, "medium", "XSS Attack", msg, ip)
+		d.AddAlert(5, "medium", "XSS Attack", msg, ip)
 		found = true
 	}
 
@@ -50,7 +50,7 @@ func (x *XSSDetection) Run(w http.ResponseWriter, r *http.Request, detector *Det
 	for _, cookie := range r.Cookies() {
 		if checkXSS(cookie.String()) {
 			msg := "detected in cookie: " + cookie.String()
-			detector.AddAlert(6, "medium", "XSS Attack", msg, ip)
+			d.AddAlert(6, "medium", "XSS Attack", msg, ip)
 			found = true
 		}
 	}
@@ -60,7 +60,7 @@ func (x *XSSDetection) Run(w http.ResponseWriter, r *http.Request, detector *Det
 		for _, value := range values {
 			if checkXSS(value) {
 				msg := "detected in HTTP header " + name + ": " + value
-				detector.AddAlert(7, "medium", "XSS Attack", msg, ip)
+				d.AddAlert(7, "medium", "XSS Attack", msg, ip)
 				found = true
 			}
 		}
@@ -77,7 +77,7 @@ func (x *XSSDetection) Run(w http.ResponseWriter, r *http.Request, detector *Det
 
 		if checkXSS(contentsStr) {
 			msg := "detected in body: " + contentsStr
-			detector.AddAlert(8, "medium", "XSS Attack", msg, ip)
+			d.AddAlert(8, "medium", "XSS Attack", msg, ip)
 			found = true
 		}
 	}

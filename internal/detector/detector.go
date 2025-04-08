@@ -7,7 +7,7 @@ import (
 )
 
 type DetectionService interface {
-	Run(w http.ResponseWriter, r *http.Request, detector *Detector)
+	Run(w http.ResponseWriter, r *http.Request, d *Detector)
 }
 
 type Detector struct {

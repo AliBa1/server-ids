@@ -8,7 +8,7 @@ type LoginAttackDetection struct {
 }
 
 
-func (s *LoginAttackDetection) Run(w http.ResponseWriter, r *http.Request, detector *Detector) {
+func (s *LoginAttackDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) {
 	// if detected
 	// detector.AddAlert("high", "SQL Injection", "", "")
 }

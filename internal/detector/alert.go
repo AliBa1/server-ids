@@ -14,22 +14,22 @@ type Alert struct {
 	SourceIP    net.IP
 }
 
-func (alert *Alert) SendEmail() {
+func (a *Alert) SendEmail() {
 
 }
 
-func (alert *Alert) SendText() {
+func (a *Alert) SendText() {
 
 }
 
-func (alert *Alert) LogToConsole() {
+func (a *Alert) LogToConsole() {
 	// log.Printf("jj")
 }
 
-func (alert *Alert) LogToFile() {
+func (a *Alert) LogToFile() {
 	
 }
 
-func (alert *Alert) WriteToUser() {
+func (a *Alert) WriteToUser() {
 
 }
