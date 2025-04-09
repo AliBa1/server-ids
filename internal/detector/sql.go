@@ -2,7 +2,6 @@ package detector
 
 import (
 	"fmt"
-	"io"
 	"net"
 	"net/http"
 	"net/url"
@@ -39,8 +38,8 @@ func (s *SQLDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 
 	// check cookies
 	for _, cookie := range r.Cookies() {
-		if rules.MatchString(cookie.String()) {
-			msg := "detected in cookie: " + cookie.String()
+		if rules.MatchString(cookie.Value) {
+			msg := "detected in cookie: " + cookie.Value
 			d.AddAlert(2, "medium", "SQL Injection", msg, ip)
 			found = true
 		}
@@ -49,7 +48,7 @@ func (s *SQLDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 	// check all header values
 	for name, values := range r.Header {
 		for _, value := range values {
-			if rules.MatchString(value) {
+			if rules.MatchString(value) && name != "Content-Type" && name != "Accept" && name != "Cookie" {
 				msg := "detected in HTTP header " + name + ": " + value
 				d.AddAlert(3, "medium", "SQL Injection", msg, ip)
 				found = true
@@ -59,16 +58,22 @@ func (s *SQLDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 
 	// check all body values
 	if r.Method == http.MethodPost {
-		defer r.Body.Close()
-		contents, err := io.ReadAll(r.Body)
+		err := r.ParseForm()
 		if err != nil {
-			return found, err
+			fmt.Printf("something went wrong parsing form data")
 		}
 
-		if rules.MatchString(string(contents)) {
-			msg := "detected in body: " + string(contents)
-			d.AddAlert(4, "medium", "SQL Injection", msg, ip)
-			found = true
+		contents := []string{}
+		for _, vals := range r.Form {
+			contents = append(contents, vals...)
+		}
+
+		for _, s := range contents {
+			if rules.MatchString(string(s)) {
+				msg := "detected in body: " + string(s)
+				d.AddAlert(4, "medium", "SQL Injection", msg, ip)
+				found = true
+			}
 		}
 	}
 

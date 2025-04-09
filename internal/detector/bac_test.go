@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"server-ids/internal/auth"
 	"server-ids/internal/sessions"
 	"strings"
 	"testing"
@@ -59,13 +58,11 @@ func TestBACDetection(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			detector := NewDetector()
 			sessionsDB := sessions.NewSessionsDB()
-			authDB := auth.NewAuthDBMemory(sessionsDB)
 			sessionID := []byte("00000000-0000-0000-0000-000000000000")
 			sessionUUID, _ := uuid.FromBytes(sessionID)
 			sessionsDB.AddSession(sessionUUID, "secure21")
 			bacDetection := &BACDetection{
 				sessionsDB: sessionsDB,
-				authDB:     authDB,
 			}
 
 			found, err := bacDetection.Run(httptest.NewRecorder(), test.request, detector)

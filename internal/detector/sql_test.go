@@ -10,14 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// type MockDetector struct {
-// 	mock.Mock
-// }
-
-// func (m *MockDetector) AddAlert(level, alertType, message string, ip net.IP) {
-// 	m.Called(level, alertType, message, ip)
-// }
-
 func TestSQLDetection(t *testing.T) {
 	tests := []struct {
 		name        string
@@ -49,7 +41,7 @@ func TestSQLDetection(t *testing.T) {
 				return r
 			}(),
 			wasDetected: true,
-			message:     "detected in cookie: session=\"' OR IF(1=1, SLEEP(5), 0) --\"",
+			message:     "detected in cookie: ' OR IF(1=1, SLEEP(5), 0) --",
 		},
 		{
 			name: "SQL injection in body",
@@ -59,10 +51,11 @@ func TestSQLDetection(t *testing.T) {
 				formData.Set("password", "password")
 
 				r := httptest.NewRequest("POST", "/auth/login", strings.NewReader(formData.Encode()))
+				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 				return r
 			}(),
 			wasDetected: true,
-			message:     "detected in body: password=password&username=user%27+%23",
+			message:     "detected in body: user' #",
 		},
 		{
 			name: "False positive single quote in body",
@@ -72,23 +65,25 @@ func TestSQLDetection(t *testing.T) {
 				formData.Set("password", "password")
 
 				r := httptest.NewRequest("POST", "/auth/login", strings.NewReader(formData.Encode()))
+				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 				return r
 			}(),
 			wasDetected: true,
-			message:     "detected in body: password=password&username=D%27Angelo",
+			message:     "detected in body: D'Angelo",
 		},
 		{
-			name: "False positive dash in body",
+			name: "False positive dashes in body",
 			request: func() *http.Request {
 				formData := url.Values{}
-				formData.Set("username", "spider-man")
+				formData.Set("username", "spider--man")
 				formData.Set("password", "password")
 
 				r := httptest.NewRequest("POST", "/auth/login", strings.NewReader(formData.Encode()))
+				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 				return r
 			}(),
 			wasDetected: true,
-			message:     "detected in body: password=password&username=spider-man",
+			message:     "detected in body: spider--man",
 		},
 		{
 			name:        "No SQL injection",
@@ -106,7 +101,6 @@ func TestSQLDetection(t *testing.T) {
 			found, err := sqlDetection.Run(httptest.NewRecorder(), test.request, detector)
 
 			assert.NoError(t, err)
-			// fmt.Println(detector.Alerts)
 			assert.Equal(t, test.wasDetected, found)
 			if test.wasDetected && len(detector.Alerts) > 0 {
 				assert.Equal(t, test.message, detector.Alerts[0].Message)

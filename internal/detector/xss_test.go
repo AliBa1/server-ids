@@ -27,7 +27,6 @@ func TestXSSDetection(t *testing.T) {
 			name: "XSS attack in headers",
 			request: func() *http.Request {
 				r := httptest.NewRequest("GET", "/", nil)
-				// r.Header.Set("X-Test-Header", "%3Cbody onload=alert('test1')%3E")
 				r.Header.Set("X-Test-Header", "<body onload=alert('test1')>")
 				return r
 			}(),
@@ -53,10 +52,11 @@ func TestXSSDetection(t *testing.T) {
 				formData.Set("password", "password")
 
 				r := httptest.NewRequest("POST", "/auth/login", strings.NewReader(formData.Encode()))
+				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 				return r
 			}(),
 			wasDetected: true,
-			message:     "detected in body: password=password&username=%3Cimg+src%3D%27http%3A%2F%2Fbad.url%27+onerror%3Dalert%28document.cookie%29%3B%3E",
+			message:     "detected in body: <img src='http://bad.url' onerror=alert(document.cookie);>",
 		},
 		{
 			name: "False positive single quote in body",
@@ -66,10 +66,11 @@ func TestXSSDetection(t *testing.T) {
 				formData.Set("password", "1>pass<3")
 
 				r := httptest.NewRequest("POST", "/auth/login", strings.NewReader(formData.Encode()))
+				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 				return r
 			}(),
 			wasDetected: true,
-			message:     "detected in body: password=1%3Epass%3C3&username=user",
+			message:     "detected in body: 1>pass<3",
 		},
 		{
 			name: "Only one angle bracket",
@@ -82,7 +83,7 @@ func TestXSSDetection(t *testing.T) {
 				return r
 			}(),
 			wasDetected: false,
-			message:     "detected in body: password=password&username=%3c3",
+			message:     "detected in body: %3c3",
 		},
 		{
 			name:        "No XSS attack",

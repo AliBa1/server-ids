@@ -21,3 +21,13 @@ func TestUpdateRole(t *testing.T) {
 	assert.Equal(t, "admin", patrick.Role)
 	assert.NoError(t, err)
 }
+
+// integration test: service and db interaction
+func TestUpdateRole_NotExist(t *testing.T) {
+	sessionsDB := sessions.NewSessionsDB()
+	authDB := auth.NewAuthDBMemory(sessionsDB)
+	service := NewUserService(authDB)
+	err := service.UpdateRole("iamnotauser", "admin")
+
+	assert.Error(t, err)
+}

@@ -205,7 +205,7 @@ func TestGetUsersHandler_NoUsers(t *testing.T) {
 
 	sessionsDB := sessions.NewSessionsDB()
 	db := NewAuthDBMemory(sessionsDB)
-	db.Users = []models.User{}
+	sessionsDB.Users = []models.User{}
 	service := NewAuthService(db)
 	handler := NewAuthHandler(service)
 	handler.GetUsers(rr, r)

@@ -22,7 +22,7 @@ func TestGetUsersDB(t *testing.T) {
 func TestGetUsersDB_Empty(t *testing.T) {
 	sessionsDB := sessions.NewSessionsDB()
 	db := NewAuthDBMemory(sessionsDB)
-	db.Users = []models.User{}
+	sessionsDB.Users = []models.User{}
 	users, err := db.GetUsers()
 
 	assert.NoError(t, err)
@@ -50,7 +50,7 @@ func TestGetUser_NotFound(t *testing.T) {
 func TestCreateUser(t *testing.T) {
 	sessionsDB := sessions.NewSessionsDB()
 	db := NewAuthDBMemory(sessionsDB)
-	prevUsersLen := len(db.Users)
+	prevUsersLen := len(sessionsDB.Users)
 	newUser := models.User{
 		Username:            "newuser",
 		Password:            "thisismypassword",
@@ -62,14 +62,14 @@ func TestCreateUser(t *testing.T) {
 	err := db.CreateUser(newUser)
 
 	assert.NoError(t, err)
-	assert.Len(t, db.Users, prevUsersLen+1)
-	assert.Contains(t, db.Users, newUser)
+	assert.Len(t, sessionsDB.Users, prevUsersLen+1)
+	assert.Contains(t, sessionsDB.Users, newUser)
 }
 
 func TestUpdateUser(t *testing.T) {
 	sessionsDB := sessions.NewSessionsDB()
 	db := NewAuthDBMemory(sessionsDB)
-	user := db.Users[0]
+	user := sessionsDB.Users[0]
 	updatedUser := models.User{
 		Username:            "funguy123",
 		Password:            "updatedpassword",
@@ -84,7 +84,7 @@ func TestUpdateUser(t *testing.T) {
 	// replace with id if using id for users
 	assert.Equal(t, updatedUser.Username, user.Username)
 	assert.NotEqual(t, updatedUser, user)
-	assert.Contains(t, db.Users, updatedUser)
+	assert.Contains(t, sessionsDB.Users, updatedUser)
 }
 
 func TestUpdateUser_NotFound(t *testing.T) {
@@ -102,14 +102,3 @@ func TestUpdateUser_NotFound(t *testing.T) {
 
 	assert.Error(t, err)
 }
-
-// func TestAddLoginKey(t *testing.T) {
-// 	sessionsDB := sessions.NewSessionsDB()
-// 	db := NewAuthDBMemory(sessionsDB)
-// 	token := uuid.New()
-// 	username := "funguy123"
-// 	db.AddSessionToken(token, username)
-
-// 	assert.Contains(t, db.Sessions, token)
-// 	assert.Equal(t, db.Sessions[token], username)
-// }

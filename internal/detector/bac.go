@@ -5,7 +5,6 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-	"server-ids/internal/auth"
 	"server-ids/internal/sessions"
 	"strings"
 
@@ -16,7 +15,6 @@ import (
 // Broken Access Control detection
 type BACDetection struct {
 	sessionsDB *sessions.SessionsDB
-	authDB     *auth.AuthDBMemory
 }
 
 func (s *BACDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) (bool, error) {
@@ -58,7 +56,7 @@ func (s *BACDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 				return found, err
 			}
 
-			user, err := s.authDB.GetUser(attemptedUsername)
+			user, err := s.sessionsDB.GetUser(attemptedUsername)
 			if err == nil && user.Role != "admin" {
 				msg := user.Username + " tried to change " + username + "'s role to a " + newRole
 				d.AddAlert(10, "medium", "BAC Attack", msg, ip)
@@ -72,7 +70,6 @@ func (s *BACDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 	// check other protected routes OR run in authorization middleware function
 
 	// check for accessing API with missing access controls for POST, PUT and DELETE
-
 	return found, nil
 }
 

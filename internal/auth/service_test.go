@@ -55,17 +55,17 @@ func TestRegister(t *testing.T) {
 	sessionsDB := sessions.NewSessionsDB()
 	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
-	dbUsersLen := len(db.Users)
+	dbUsersLen := len(sessionsDB.Users)
 	// test working pass by reference
-	serviceUserLen := len(service.db.Users)
+	serviceUserLen := len(service.db.SessionsDB.Users)
 	username := "newuser"
 	password := "iamanewuser"
 	err := service.Register(username, password)
 
 	assert.NoError(t, err)
-	assert.Equal(t, dbUsersLen+1, len(db.Users))
+	assert.Equal(t, dbUsersLen+1, len(sessionsDB.Users))
 	// test working pass by reference
-	assert.Equal(t, serviceUserLen+1, len(service.db.Users))
+	assert.Equal(t, serviceUserLen+1, len(service.db.SessionsDB.Users))
 }
 
 // integration test: service and db interaction
@@ -73,17 +73,17 @@ func TestRegister_UsernameTaken(t *testing.T) {
 	sessionsDB := sessions.NewSessionsDB()
 	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
-	dbUsersLen := len(db.Users)
+	dbUsersLen := len(sessionsDB.Users)
 	// test working pass by reference
-	serviceUserLen := len(service.db.Users)
+	serviceUserLen := len(service.db.SessionsDB.Users)
 	username := "funguy123"
 	password := "iamanewuser"
 	err := service.Register(username, password)
 
 	assert.Error(t, err)
-	assert.Equal(t, dbUsersLen, len(db.Users))
+	assert.Equal(t, dbUsersLen, len(sessionsDB.Users))
 	// test working pass by reference
-	assert.Equal(t, serviceUserLen, len(service.db.Users))
+	assert.Equal(t, serviceUserLen, len(service.db.SessionsDB.Users))
 }
 
 // integration test: service and db interaction

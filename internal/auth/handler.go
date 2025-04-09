@@ -17,10 +17,6 @@ func NewAuthHandler(service *AuthService) *AuthHandler {
 	return &AuthHandler{service: service}
 }
 
-func (h *AuthHandler) GetAuth(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Welcome to the auth service")
-}
-
 func (h *AuthHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")

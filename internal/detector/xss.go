@@ -2,7 +2,6 @@ package detector
 
 import (
 	"fmt"
-	"io"
 	"net"
 	"net/http"
 	"net/url"
@@ -68,17 +67,22 @@ func (x *XSSDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 
 	// check all body values
 	if r.Method == http.MethodPost {
-		defer r.Body.Close()
-		contents, err := io.ReadAll(r.Body)
-		contentsStr := string(contents)
+		err := r.ParseForm()
 		if err != nil {
-			return found, err
+			fmt.Printf("something went wrong parsing form data")
 		}
 
-		if checkXSS(contentsStr) {
-			msg := "detected in body: " + contentsStr
-			d.AddAlert(8, "medium", "XSS Attack", msg, ip)
-			found = true
+		contents := []string{}
+		for _, vals := range r.Form {
+			contents = append(contents, vals...)
+		}
+
+		for _, s := range contents {
+			if checkXSS(s) {
+				msg := "detected in body: " + s
+				d.AddAlert(8, "medium", "XSS Attack", msg, ip)
+				found = true
+			}
 		}
 	}
 

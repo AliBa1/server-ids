@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"server-ids/internal/detector"
 	"server-ids/internal/sessions"
 )
 
@@ -17,7 +18,7 @@ func NewMiddleware(sDB *sessions.SessionsDB) *Middleware {
 	m := &Middleware{sessionsDB: sDB}
 	m.addToChain(m.Logger)
 	// m.addToChain(m.Authorization)
-	// m.addToChain(m.IDS)
+	m.addToChain(m.IDS)
 	return m
 }
 
@@ -45,9 +46,7 @@ func (m *Middleware) Logger(next http.HandlerFunc) http.HandlerFunc {
 func (m *Middleware) Authorization(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !m.sessionsDB.IsUserLoggedIn(r) {
-			fmt.Println("2222222")
 			http.Error(w, "Unauthorized: Login to gain access to this route", http.StatusUnauthorized)
-			fmt.Println("e333333333")
 			return
 		}
 
@@ -59,11 +58,21 @@ func (m *Middleware) Authorization(next http.HandlerFunc) http.HandlerFunc {
 func (m *Middleware) IDS(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Composite design pattern
+		d := detector.NewDetector()
 
-		// detector := &detector.Detector{}
+		err := r.ParseForm()
+		if err != nil {
+			fmt.Printf("something went wrong parsing form data")
+		}
+		
+		if len(r.Form) > 0 {
+			d.AddService(&detector.SQLDetection{})
+			d.AddService(&detector.XSSDetection{})
+		}
 
-		// if possibility of SQL attack
-		// 		detector.AddService(&SQLDetection{})
+		d.AddService(&detector.BACDetection{})
+
+		d.Run(w, r)
 
 		// if possibility of Login attack
 		// 		detector.AddService(&LoginDetection{})
@@ -73,8 +82,5 @@ func (m *Middleware) IDS(next http.HandlerFunc) http.HandlerFunc {
 
 		// if possibility of DDoS attack
 		// 		detector.AddService(&DDoSDetection{})
-
-		// if possibility of BAL (broken access control) attack
-		// 		detector.AddService(&BALDetection{})
 	}
 }
