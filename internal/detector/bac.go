@@ -25,7 +25,6 @@ func (s *BACDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 	ip := net.ParseIP(rawIP)
 
 	decodedURL, err := url.QueryUnescape(r.URL.String())
-	// splitURL := strings.Split(decodedURL, "/")
 	if err != nil {
 		return false, fmt.Errorf("problem decoding URL: %w", err)
 	}
@@ -34,11 +33,9 @@ func (s *BACDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 	if strings.Contains(decodedURL, "/role") {
 		vars := mux.Vars(r)
 		username := vars["username"]
+		r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		r.ParseForm()
 		newRole := r.FormValue("newRole")
-
-		// continue debugging tests here vvvvvv
-		fmt.Printf("Username: %s\n", username)
-		fmt.Printf("Role: %s\n", newRole)
 
 		// if not logged in
 		if !s.sessionsDB.IsUserLoggedIn(r) {
@@ -49,16 +46,18 @@ func (s *BACDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 
 		// if not an admin
 		sessionKey, err := r.Cookie("session_key")
-		if sessionKey != nil && err != nil {
-			keyUUID, err := uuid.Parse(sessionKey.String())
+
+		if err == nil {
+			keyUUID, err := uuid.Parse(sessionKey.Value)
 			if err != nil {
 				return found, err
 			}
+
 			attemptedUsername, err := s.sessionsDB.GetUsername(keyUUID)
-			fmt.Println("Panic here")
 			if err != nil {
 				return found, err
 			}
+
 			user, err := s.authDB.GetUser(attemptedUsername)
 			if err == nil && user.Role != "admin" {
 				msg := user.Username + " tried to change " + username + "'s role to a " + newRole
