@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"server-ids/internal/auth"
@@ -29,6 +30,15 @@ func main() {
 	docsDB := document.NewDocsDBMemory()
 	documentService := document.NewDocsService(docsDB)
 	document.RegisterDocumentRoutes(r, middleware, documentService, sessionsDB)
+
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		tmpl, err := template.ParseFiles("internal/views/login.html")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		tmpl.Execute(w, nil)
+	})
 
 	fmt.Println("Listening on port 8080")
 	err := http.ListenAndServe(":8080", r)
