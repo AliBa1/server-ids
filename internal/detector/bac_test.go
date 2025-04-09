@@ -62,7 +62,7 @@ func TestBACDetection(t *testing.T) {
 			sessionUUID, _ := uuid.FromBytes(sessionID)
 			sessionsDB.AddSession(sessionUUID, "secure21")
 			bacDetection := &BACDetection{
-				sessionsDB: sessionsDB,
+				SessionsDB: sessionsDB,
 			}
 
 			found, err := bacDetection.Run(httptest.NewRecorder(), test.request, detector)

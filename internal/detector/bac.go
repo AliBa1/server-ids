@@ -14,7 +14,7 @@ import (
 
 // Broken Access Control detection
 type BACDetection struct {
-	sessionsDB *sessions.SessionsDB
+	SessionsDB *sessions.SessionsDB
 }
 
 func (s *BACDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) (bool, error) {
@@ -36,7 +36,7 @@ func (s *BACDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 		newRole := r.FormValue("newRole")
 
 		// if not logged in
-		if !s.sessionsDB.IsUserLoggedIn(r) {
+		if !s.SessionsDB.IsUserLoggedIn(r) {
 			msg := "unauthenticated person tried to change " + username + "'s role to a " + newRole
 			d.AddAlert(9, "high", "BAC Attack", msg, ip)
 			found = true
@@ -51,12 +51,12 @@ func (s *BACDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 				return found, err
 			}
 
-			attemptedUsername, err := s.sessionsDB.GetUsername(keyUUID)
+			attemptedUsername, err := s.SessionsDB.GetUsername(keyUUID)
 			if err != nil {
 				return found, err
 			}
 
-			user, err := s.sessionsDB.GetUser(attemptedUsername)
+			user, err := s.SessionsDB.GetUser(attemptedUsername)
 			if err == nil && user.Role != "admin" {
 				msg := user.Username + " tried to change " + username + "'s role to a " + newRole
 				d.AddAlert(10, "medium", "BAC Attack", msg, ip)

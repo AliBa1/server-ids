@@ -45,6 +45,13 @@ func (m *Middleware) Logger(next http.HandlerFunc) http.HandlerFunc {
 
 func (m *Middleware) Authorization(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Printf("%s\n", m.sessionsDB.Sessions)
+		d := detector.NewDetector()
+		d.AddService(&detector.BACDetection{
+			SessionsDB: m.sessionsDB,
+		})
+		d.Run(w, r)
+
 		if !m.sessionsDB.IsUserLoggedIn(r) {
 			http.Error(w, "Unauthorized: Login to gain access to this route", http.StatusUnauthorized)
 			return
@@ -64,13 +71,15 @@ func (m *Middleware) IDS(next http.HandlerFunc) http.HandlerFunc {
 		if err != nil {
 			fmt.Printf("something went wrong parsing form data")
 		}
-		
+
 		if len(r.Form) > 0 {
 			d.AddService(&detector.SQLDetection{})
 			d.AddService(&detector.XSSDetection{})
 		}
 
-		d.AddService(&detector.BACDetection{})
+		d.AddService(&detector.BACDetection{
+			SessionsDB: m.sessionsDB,
+		})
 
 		d.Run(w, r)
 
@@ -82,5 +91,7 @@ func (m *Middleware) IDS(next http.HandlerFunc) http.HandlerFunc {
 
 		// if possibility of DDoS attack
 		// 		detector.AddService(&DDoSDetection{})
+		
+		next(w, r)
 	}
 }
