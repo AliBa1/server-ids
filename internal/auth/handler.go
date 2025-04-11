@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"net/http"
+	"server-ids/internal/template"
 	"strings"
 	"time"
 )
@@ -11,10 +12,12 @@ import (
 
 type AuthHandler struct {
 	service *AuthService
+	tmpl    *template.Templates
 }
 
-func NewAuthHandler(service *AuthService) *AuthHandler {
-	return &AuthHandler{service: service}
+func NewAuthHandler(service *AuthService, template *template.Templates) *AuthHandler {
+	// return &AuthHandler{service: service}
+	return &AuthHandler{service: service, tmpl: template}
 }
 
 func (h *AuthHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
@@ -26,8 +29,10 @@ func (h *AuthHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	token, err := h.service.Login(username, password)
 
+	// tmpl := template.NewTemplate()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		data := template.ReturnData{Error: err.Error()}
+		h.tmpl.Render(w, "login", data)
 		return
 	}
 
@@ -39,7 +44,8 @@ func (h *AuthHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		// Secure:   true, // protection from XSS attacks w/ HTTPS: (https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies#security)
 	})
-	fmt.Fprintf(w, "Hello %s! You are now logged in.\n", username)
+	// fmt.Fprintf(w, "Hello %s! You are now logged in.\n", username)
+	h.tmpl.Render(w, "documents", nil)
 }
 
 func (h *AuthHandler) PostRegister(w http.ResponseWriter, r *http.Request) {

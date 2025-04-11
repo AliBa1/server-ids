@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"server-ids/internal/models"
 	"server-ids/internal/sessions"
+	"server-ids/internal/template"
 	"strings"
 	"testing"
 
@@ -30,15 +31,14 @@ func TestPostLogin(t *testing.T) {
 	sessionsDB := sessions.NewSessionsDB()
 	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
-	handler := NewAuthHandler(service)
+	tmpl := template.NewTestTemplate()
+	handler := NewAuthHandler(service, tmpl)
 	handler.PostLogin(rr, r)
 
 	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
-	defer rr.Result().Body.Close()
-
-	responseMsg, err := io.ReadAll(rr.Body)
 	assert.NoError(t, err)
-	assert.NotEmpty(t, responseMsg)
+	assert.Equal(t, "documents", tmpl.LastRenderedBlock)
+	assert.Nil(t, tmpl.LastRenderedData)
 }
 
 // integration test: HTTP, service, and db interaction
@@ -58,7 +58,8 @@ func TestPostLogin_MissingPassword(t *testing.T) {
 	sessionsDB := sessions.NewSessionsDB()
 	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
-	handler := NewAuthHandler(service)
+	tmpl := template.NewTestTemplate()
+	handler := NewAuthHandler(service, tmpl)
 	handler.PostLogin(rr, r)
 
 	assert.Equal(t, http.StatusBadRequest, rr.Result().StatusCode)
@@ -82,10 +83,12 @@ func TestPostLogin_UserNotExist(t *testing.T) {
 	sessionsDB := sessions.NewSessionsDB()
 	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
-	handler := NewAuthHandler(service)
+	tmpl := template.NewTestTemplate()
+	handler := NewAuthHandler(service, tmpl)
 	handler.PostLogin(rr, r)
 
-	assert.Equal(t, http.StatusBadRequest, rr.Result().StatusCode)
+	assert.Equal(t, "login", tmpl.LastRenderedBlock)
+	assert.NotEmpty(t, tmpl.LastRenderedData)
 	defer rr.Result().Body.Close()
 }
 
@@ -106,7 +109,8 @@ func TestPostRegister(t *testing.T) {
 	sessionsDB := sessions.NewSessionsDB()
 	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
-	handler := NewAuthHandler(service)
+	tmpl := template.NewTestTemplate()
+	handler := NewAuthHandler(service, tmpl)
 	handler.PostRegister(rr, r)
 
 	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
@@ -134,7 +138,8 @@ func TestPostRegister_MissingPassword(t *testing.T) {
 	sessionsDB := sessions.NewSessionsDB()
 	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
-	handler := NewAuthHandler(service)
+	tmpl := template.NewTestTemplate()
+	handler := NewAuthHandler(service, tmpl)
 	handler.PostRegister(rr, r)
 
 	assert.Equal(t, http.StatusBadRequest, rr.Result().StatusCode)
@@ -162,7 +167,8 @@ func TestPostRegister_UserExists(t *testing.T) {
 	sessionsDB := sessions.NewSessionsDB()
 	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
-	handler := NewAuthHandler(service)
+	tmpl := template.NewTestTemplate()
+	handler := NewAuthHandler(service, tmpl)
 	handler.PostRegister(rr, r)
 
 	assert.Equal(t, http.StatusBadRequest, rr.Result().StatusCode)
@@ -184,7 +190,8 @@ func TestGetUsersHandler(t *testing.T) {
 	sessionsDB := sessions.NewSessionsDB()
 	db := NewAuthDBMemory(sessionsDB)
 	service := NewAuthService(db)
-	handler := NewAuthHandler(service)
+	tmpl := template.NewTestTemplate()
+	handler := NewAuthHandler(service, tmpl)
 	handler.GetUsers(rr, r)
 
 	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
@@ -207,7 +214,8 @@ func TestGetUsersHandler_NoUsers(t *testing.T) {
 	db := NewAuthDBMemory(sessionsDB)
 	sessionsDB.Users = []models.User{}
 	service := NewAuthService(db)
-	handler := NewAuthHandler(service)
+	tmpl := template.NewTestTemplate()
+	handler := NewAuthHandler(service, tmpl)
 	handler.GetUsers(rr, r)
 
 	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
