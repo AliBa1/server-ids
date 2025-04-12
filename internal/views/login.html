@@ -3,27 +3,26 @@
 <html lang="en">
   <head>
     <!-- <script src="/htmx/htmx.min.js"></script> -->
-    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script
+      src="https://unpkg.com/htmx.org@2.0.4"
+      integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+      crossorigin="anonymous"
+    ></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Server IDS | Home</title>
   </head>
   <body>
-    <!-- Login/Register page -->
-    <!-- <form hx-post="/auth/login" hx-target="#login-error"> -->
     <form hx-post="/auth/login" hx-target="body">
       <label for="username">Username:</label>
       <input type="text" id="username" name="username" required />
 
       <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required /> 
+      <input type="password" id="password" name="password" required />
 
       <button type="submit">Login</button>
-
-      <p id="login-error" style="color: red">{{ .Error}}</p>
     </form>
-    
-    <!-- <p id="login-error" style="color: red">{{ .Error}}</p> -->
+    <p style="color: red">{{ .Error}}</p>
   </body>
 </html>
 {{ end }}

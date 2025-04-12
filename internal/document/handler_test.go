@@ -1,11 +1,11 @@
 package document
 
 import (
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"server-ids/internal/sessions"
+	"server-ids/internal/template"
 	"strings"
 	"testing"
 
@@ -25,15 +25,13 @@ func TestGetDocsHandler(t *testing.T) {
 	db := NewDocsDBMemory()
 	sessionsDB := sessions.NewSessionsDB()
 	service := NewDocsService(db)
-	handler := NewDocsHandler(service, sessionsDB)
+	tmpl := template.NewTestTemplate()
+	handler := NewDocsHandler(service, sessionsDB, tmpl)
 	handler.GetDocs(rr, r)
 
 	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
-	defer rr.Result().Body.Close()
-
-	responseMsg, err := io.ReadAll(rr.Body)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, responseMsg)
+	assert.Equal(t, "documents", tmpl.LastRenderedBlock)
+	assert.NotEmpty(t, tmpl.LastRenderedData)
 }
 
 // integration test: HTTP, service, and db interaction
@@ -48,19 +46,15 @@ func TestGetDocHandler(t *testing.T) {
 	db := NewDocsDBMemory()
 	sessionsDB := sessions.NewSessionsDB()
 	service := NewDocsService(db)
-	handler := NewDocsHandler(service, sessionsDB)
+	tmpl := template.NewTestTemplate()
+	handler := NewDocsHandler(service, sessionsDB, tmpl)
 
 	// use this if there are route variables
 	router := mux.NewRouter()
 	router.HandleFunc("/docs/{title}", handler.GetDoc).Methods("GET")
 	router.ServeHTTP(rr, r)
 
-	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
-	defer rr.Result().Body.Close()
-
-	responseMsg, err := io.ReadAll(rr.Body)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, responseMsg)
+	assert.Equal(t, http.StatusFound, rr.Result().StatusCode)
 }
 
 // integration test: HTTP, service, and db interaction
@@ -75,19 +69,19 @@ func TestGetDocHandler_NotLoggedIn(t *testing.T) {
 	db := NewDocsDBMemory()
 	sessionsDB := sessions.NewSessionsDB()
 	service := NewDocsService(db)
-	handler := NewDocsHandler(service, sessionsDB)
+	tmpl := template.NewTestTemplate()
+	handler := NewDocsHandler(service, sessionsDB, tmpl)
 
 	// use this if there are route variables
 	router := mux.NewRouter()
 	router.HandleFunc("/docs/{title}", handler.GetDoc).Methods("GET")
 	router.ServeHTTP(rr, r)
 
-	assert.Equal(t, http.StatusUnauthorized, rr.Result().StatusCode)
-	defer rr.Result().Body.Close()
-
-	responseMsg, err := io.ReadAll(rr.Body)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, responseMsg)
+	expected := template.ReturnData{
+		Error: "You don't have access to locked documents",
+	}
+	assert.Equal(t, "document", tmpl.LastRenderedBlock)
+	assert.Equal(t, expected, tmpl.LastRenderedData)
 }
 
 // integration test: HTTP, service, and db interaction
@@ -106,17 +100,17 @@ func TestGetDocHandler_NotFound(t *testing.T) {
 	db := NewDocsDBMemory()
 	sessionsDB := sessions.NewSessionsDB()
 	service := NewDocsService(db)
-	handler := NewDocsHandler(service, sessionsDB)
+	tmpl := template.NewTestTemplate()
+	handler := NewDocsHandler(service, sessionsDB, tmpl)
 
 	// use this if there are route variables
 	router := mux.NewRouter()
 	router.HandleFunc("/docs/{title}", handler.GetDoc).Methods("GET")
 	router.ServeHTTP(rr, r)
 
-	assert.Equal(t, http.StatusInternalServerError, rr.Result().StatusCode)
-	defer rr.Result().Body.Close()
-
-	responseMsg, err := io.ReadAll(rr.Body)
-	assert.NoError(t, err)
-	assert.Equal(t, "document titled 'NonExistant' not found\n", string(responseMsg))
+	expected := template.ReturnData{
+		Error: "Problem occured retreving the document: document titled 'NonExistant' not found",
+	}
+	assert.Equal(t, "document", tmpl.LastRenderedBlock)
+	assert.Equal(t, expected, tmpl.LastRenderedData)
 }

@@ -1,11 +1,10 @@
 package document
 
 import (
-	"fmt"
 	"net/http"
 	"server-ids/internal/models"
 	"server-ids/internal/sessions"
-	"strings"
+	"server-ids/internal/template"
 
 	"github.com/gorilla/mux"
 )
@@ -13,16 +12,14 @@ import (
 type DocsHandler struct {
 	service    *DocsService
 	sessionsDB *sessions.SessionsDB
+	tmpl       *template.Templates
 }
 
-func NewDocsHandler(service *DocsService, sDB *sessions.SessionsDB) *DocsHandler {
-	return &DocsHandler{service: service, sessionsDB: sDB}
+func NewDocsHandler(service *DocsService, sDB *sessions.SessionsDB, template *template.Templates) *DocsHandler {
+	return &DocsHandler{service: service, sessionsDB: sDB, tmpl: template}
 }
 
 func (h *DocsHandler) GetDocs(w http.ResponseWriter, r *http.Request) {
-	// fmt.Fprintln(w, "Getting documents from the database...")
-	// fmt.Fprintln(w, "")
-
 	var docs []models.Document
 	var err error
 	docs, err = h.service.GetDocs()
@@ -32,41 +29,37 @@ func (h *DocsHandler) GetDocs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(docs) < 1 {
-		fmt.Fprintln(w, "There are no documents")
-	} else {
-		lockEmoji := "🔒"
-		unlockEmoji := "🔓"
-		fmt.Fprintf(w, "%-30s %-10s\n", "Title", "Locked")
-		fmt.Fprintf(w, "%s\n", strings.Repeat("-", 40))
-		for _, d := range docs {
-			lockStatus := unlockEmoji
-			if d.IsLocked {
-				lockStatus = lockEmoji
-			}
-			fmt.Fprintf(w, "%-30s %-10s\n", d.Title, lockStatus)
-		}
-		fmt.Fprintf(w, "\nTo view any of these documents go to '/docs/{title}'\n")
+	data := template.ReturnData{
+		Documents: docs,
 	}
+	h.tmpl.Render(w, "documents", data)
 }
 
 func (h *DocsHandler) GetDoc(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	title := vars["title"]
+	data := template.ReturnData{}
 
 	var doc models.Document
 	var err error
 	doc, err = h.service.GetDoc(title)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		data.Error = "Problem occured retreving the document: " + err.Error()
+		h.tmpl.Render(w, "document", data)
 		return
 	}
 
 	if doc.IsLocked && !h.sessionsDB.IsUserLoggedIn(r) {
-		http.Error(w, "Unauthorized: Login to gain access to this route", http.StatusUnauthorized)
+		data.Error = "You don't have access to locked documents"
+		h.tmpl.Render(w, "document", data)
 		return
 	}
 
-	fmt.Fprintf(w, "Title: %s\n", doc.Title)
-	fmt.Fprintf(w, "%s\n", doc.Content)
+	if r.Header.Get("HX-Request") == "true" {
+		data.Document = doc
+		h.tmpl.Render(w, "document", data)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusFound)
 }

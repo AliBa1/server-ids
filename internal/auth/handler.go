@@ -45,7 +45,8 @@ func (h *AuthHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
 		// Secure:   true, // protection from XSS attacks w/ HTTPS: (https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies#security)
 	})
 	// fmt.Fprintf(w, "Hello %s! You are now logged in.\n", username)
-	h.tmpl.Render(w, "documents", nil)
+	
+	http.Redirect(w, r, "/docs", http.StatusFound)
 }
 
 func (h *AuthHandler) PostRegister(w http.ResponseWriter, r *http.Request) {

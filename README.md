@@ -1,6 +1,6 @@
 # Network Intrustion Detection System (IDS)
 
-[![Coverage](https://img.shields.io/badge/Coverage-77.4%25-brightgreen)](https://github.com/AliBa1/server-ids/actions)
+[![Coverage](https://img.shields.io/badge/Coverage-76.5%25-brightgreen)](https://github.com/AliBa1/server-ids/actions)
 
 Network Intrusion Detection System prototype for a REST API using HTTP
 

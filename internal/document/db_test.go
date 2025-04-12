@@ -26,7 +26,7 @@ func TestGetDocs_Empty(t *testing.T) {
 
 func TestGetDoc(t *testing.T) {
 	db := NewDocsDBMemory()
-	docs, err := db.GetDoc("Top Secret Case Study #1")
+	docs, err := db.GetDoc("Top Secret Case Study")
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, docs)

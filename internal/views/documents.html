@@ -2,14 +2,43 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script
+      src="https://unpkg.com/htmx.org@2.0.4"
+      integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+      crossorigin="anonymous"
+    ></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>IDS | Documents</title>
   </head>
   <body>
-    <!-- Documents page -->
-    <!-- Allow reading of documents -->
-     <p>Documents page</p>
+    <h2 style="text-decoration: underline">Documents</h2>
+    <table style="border-collapse: collapse; margin: 20px 0">
+      <tr style="background-color: #f2f2f2">
+        <th style="padding: 12px; border: 1px solid #ccc; text-align: left">
+          Title
+        </th>
+        <th style="padding: 12px; border: 1px solid #ccc; text-align: left">
+          Locked
+        </th>
+      </tr>
+      {{ range .Documents }}
+      <tr
+        style="transition: background-color 0.2s ease; cursor: pointer"
+        onmouseover="this.style.backgroundColor='#e6f0ff';"
+        onmouseout="this.style.backgroundColor='';"
+        hx-get="/docs/{{.Title}}"
+        hx-target="#document-viewer"
+      >
+        <td style="padding: 12px; border: 1px solid #ccc">{{ .Title }}</td>
+        <td style="padding: 12px; border: 1px solid #ccc">
+          {{ if .IsLocked }} 🔒 {{ end }}
+        </td>
+      </tr>
+      {{ end }}
+    </table>
+
+    <section id="document-viewer"></section>
   </body>
 </html>
 {{ end }}

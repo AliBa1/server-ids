@@ -35,9 +35,9 @@ func TestPostLogin(t *testing.T) {
 	handler := NewAuthHandler(service, tmpl)
 	handler.PostLogin(rr, r)
 
-	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
+	assert.Equal(t, http.StatusFound, rr.Result().StatusCode)
 	assert.NoError(t, err)
-	assert.Equal(t, "documents", tmpl.LastRenderedBlock)
+	// assert.Equal(t, "documents", tmpl.LastRenderedBlock)
 	assert.Nil(t, tmpl.LastRenderedData)
 }
 
@@ -89,7 +89,7 @@ func TestPostLogin_UserNotExist(t *testing.T) {
 
 	assert.Equal(t, "login", tmpl.LastRenderedBlock)
 	assert.NotEmpty(t, tmpl.LastRenderedData)
-	defer rr.Result().Body.Close()
+	// defer rr.Result().Body.Close()
 }
 
 // integration test: HTTP, service, and db interaction

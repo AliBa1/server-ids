@@ -1,0 +1,6 @@
+{{ block "document" .}}
+  <h2 style="text-decoration: underline;">Document Viewer</h2>
+  <p style="color: red">{{ .Error}}</p>
+  <h2>{{ .Document.Title }}</h2>
+  <p>{{ .Document.Content }}</p>
+{{ end }}

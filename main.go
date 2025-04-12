@@ -32,7 +32,7 @@ func main() {
 
 	docsDB := document.NewDocsDBMemory()
 	documentService := document.NewDocsService(docsDB)
-	document.RegisterDocumentRoutes(r, middleware, documentService, sessionsDB)
+	document.RegisterDocumentRoutes(r, middleware, documentService, sessionsDB, tmpl)
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		data := template.ReturnData{Error: ""}

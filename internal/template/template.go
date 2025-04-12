@@ -2,6 +2,7 @@ package template
 
 import (
 	"io"
+	"server-ids/internal/models"
 	"text/template"
 )
 
@@ -12,7 +13,9 @@ type Templates struct {
 }
 
 type ReturnData struct {
-	Error string
+	Error     string
+	Documents []models.Document
+	Document  models.Document
 }
 
 func NewTemplate() *Templates {
