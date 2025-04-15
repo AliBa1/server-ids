@@ -54,7 +54,10 @@ func TestGetDocHandler(t *testing.T) {
 	router.HandleFunc("/docs/{title}", handler.GetDoc).Methods("GET")
 	router.ServeHTTP(rr, r)
 
-	assert.Equal(t, http.StatusFound, rr.Result().StatusCode)
+	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
+	assert.NoError(t, err)
+	assert.Equal(t, "document", tmpl.LastRenderedBlock)
+	assert.NotNil(t, tmpl.LastRenderedData)
 }
 
 // integration test: HTTP, service, and db interaction
@@ -78,7 +81,7 @@ func TestGetDocHandler_NotLoggedIn(t *testing.T) {
 	router.ServeHTTP(rr, r)
 
 	expected := template.ReturnData{
-		Error: "You don't have access to locked documents",
+		Error: "Login to access documents",
 	}
 	assert.Equal(t, "document", tmpl.LastRenderedBlock)
 	assert.Equal(t, expected, tmpl.LastRenderedData)

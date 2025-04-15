@@ -195,11 +195,9 @@ func TestGetUsersHandler(t *testing.T) {
 	handler.GetUsers(rr, r)
 
 	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
-	defer rr.Result().Body.Close()
-
-	responseMsg, err := io.ReadAll(rr.Body)
 	assert.NoError(t, err)
-	assert.NotEmpty(t, responseMsg)
+	assert.Equal(t, "users", tmpl.LastRenderedBlock)
+	assert.NotNil(t, tmpl.LastRenderedData)
 }
 
 func TestGetUsersHandler_NoUsers(t *testing.T) {
@@ -219,11 +217,6 @@ func TestGetUsersHandler_NoUsers(t *testing.T) {
 	handler.GetUsers(rr, r)
 
 	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
-	defer rr.Result().Body.Close()
-
-	responseMsg, err := io.ReadAll(rr.Body)
-	msgString := string(responseMsg)
 	assert.NoError(t, err)
-	// assert.Equal(t, "Getting users from the database...\n\nThere are no users\n", msgString)
-	assert.Equal(t, "There are no users\n", msgString)
+	assert.Equal(t, "users", tmpl.LastRenderedBlock)
 }

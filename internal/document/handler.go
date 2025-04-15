@@ -49,7 +49,13 @@ func (h *DocsHandler) GetDoc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if doc.IsLocked && !h.sessionsDB.IsUserLoggedIn(r) {
+	if !h.sessionsDB.IsUserLoggedIn(r) {
+		data.Error = "Login to access documents"
+		h.tmpl.Render(w, "document", data)
+		return
+	}
+
+	if doc.IsLocked && !h.sessionsDB.IsUserEmployee(r) {
 		data.Error = "You don't have access to locked documents"
 		h.tmpl.Render(w, "document", data)
 		return

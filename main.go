@@ -28,7 +28,7 @@ func main() {
 	auth.RegisterAuthRoutes(r, middleware, authService, tmpl)
 
 	userService := user.NewUserService(authDB)
-	user.RegisterUserRoutes(r, middleware, userService)
+	user.RegisterUserRoutes(r, middleware, userService, tmpl)
 
 	docsDB := document.NewDocsDBMemory()
 	documentService := document.NewDocsService(docsDB)

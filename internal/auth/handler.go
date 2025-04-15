@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"server-ids/internal/template"
-	"strings"
 	"time"
 )
 
@@ -45,7 +44,7 @@ func (h *AuthHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
 		// Secure:   true, // protection from XSS attacks w/ HTTPS: (https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies#security)
 	})
 	// fmt.Fprintf(w, "Hello %s! You are now logged in.\n", username)
-	
+
 	http.Redirect(w, r, "/docs", http.StatusFound)
 }
 
@@ -74,13 +73,6 @@ func (h *AuthHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(users) < 1 {
-		fmt.Fprintln(w, "There are no users")
-	} else {
-		fmt.Fprintf(w, "%-15s %-10s %-55s %-20s\n", "Username", "Role", "Last Login Date", "Last Login IP")
-		fmt.Fprintf(w, "%s\n", strings.Repeat("-", 100))
-		for _, u := range users {
-			fmt.Fprintf(w, "%-15s %-10s %-55s %-20s\n", u.Username, u.Role, u.LastLoginDate, u.LastLoginIP.String())
-		}
-	}
+	data := template.ReturnData{Users: users}
+	h.tmpl.Render(w, "users", data)
 }

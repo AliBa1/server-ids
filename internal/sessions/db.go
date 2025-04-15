@@ -56,3 +56,52 @@ func (s *SessionsDB) IsUserLoggedIn(r *http.Request) bool {
 	_, err = s.GetUsername(key)
 	return err == nil
 }
+
+func (s *SessionsDB) IsUserEmployee(r *http.Request) bool {
+	keyCookie, err := r.Cookie("session_key")
+	if err != nil {
+		return false
+	}
+
+	key, err := uuid.Parse(keyCookie.Value)
+	if err != nil {
+		return false
+	}
+
+	username, err := s.GetUsername(key)
+	if err != nil {
+		return false
+	}
+
+	user, err := s.GetUser(username)
+	if err != nil {
+		return false
+	}
+
+	return user.Role == "admin" || user.Role == "employee"
+}
+
+
+func (s *SessionsDB) IsUserAdmin(r *http.Request) bool {
+	keyCookie, err := r.Cookie("session_key")
+	if err != nil {
+		return false
+	}
+
+	key, err := uuid.Parse(keyCookie.Value)
+	if err != nil {
+		return false
+	}
+
+	username, err := s.GetUsername(key)
+	if err != nil {
+		return false
+	}
+
+	user, err := s.GetUser(username)
+	if err != nil {
+		return false
+	}
+
+	return user.Role == "admin"
+}

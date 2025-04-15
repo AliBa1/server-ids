@@ -1,12 +1,48 @@
+{{ block "users" .}}
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script
+      src="https://unpkg.com/htmx.org@2.0.4"
+      integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+      crossorigin="anonymous"
+    ></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>IDS | Users</title>
   </head>
   <body>
-    <!-- Users page -->
-    <!-- Show all users and allow role updates to take place -->
+    <a href="/docs">View Documents</a>
+    <h2 style="text-decoration: underline">Users</h2>
+    <p style="color: red;">{{ .Error }}</p>
+    <table style="border-collapse: collapse; margin: 20px 0">
+      <tr style="background-color: #f2f2f2">
+        <th style="padding: 12px; border: 1px solid #ccc; text-align: left">
+          Username
+        </th>
+        <th style="padding: 12px; border: 1px solid #ccc; text-align: left">
+          Role
+        </th>
+        <th style="padding: 12px; border: 1px solid #ccc; text-align: left">
+          New Role
+        </th>
+      </tr>
+      {{ range .Users }}
+      <tr style="transition: background-color 0.2s ease; cursor: pointer">
+        <td style="padding: 12px; border: 1px solid #ccc">{{ .Username }}</td>
+        <td style="padding: 12px; border: 1px solid #ccc">{{ .Role }}</td>
+        <td style="padding: 12px; border: 1px solid #ccc">
+          <select name="newRole" hx-patch="/users/{{ .Username }}/role" hx-target="body" hx-trigger="change" hx-include="this">
+            <option value="guest" {{ if eq .Role "guest" }}selected{{ end }}>guest</option>
+            <option value="employee" {{ if eq .Role "employee" }}selected{{ end }}>employee</option>
+            <option value="admin" {{ if eq .Role "admin" }}selected{{ end }}>admin</option>
+          </select>
+        </td>
+      </tr>
+      {{ end }}
+    </table>
+
+    <!-- <section id="document-viewer"></section> -->
   </body>
 </html>
+{{ end }}

@@ -46,15 +46,15 @@ func (s *SQLDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 	}
 
 	// check all header values
-	for name, values := range r.Header {
-		for _, value := range values {
-			if rules.MatchString(value) && name != "Content-Type" && name != "Accept" && name != "Cookie" {
-				msg := "detected in HTTP header " + name + ": " + value
-				d.AddAlert(3, "medium", "SQL Injection", msg, ip)
-				found = true
-			}
-		}
-	}
+	// for name, values := range r.Header {
+	// 	for _, value := range values {
+	// 		if rules.MatchString(value) && name != "Content-Type" && name != "Accept" && name != "Cookie" {
+	// 			msg := "detected in HTTP header " + name + ": " + value
+	// 			d.AddAlert(3, "medium", "SQL Injection", msg, ip)
+	// 			found = true
+	// 		}
+	// 	}
+	// }
 
 	// check all body values
 	if r.Method == http.MethodPost {

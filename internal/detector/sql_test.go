@@ -23,16 +23,16 @@ func TestSQLDetection(t *testing.T) {
 			wasDetected: true,
 			message:     "detected in url path: /id=1' OR '1'='1",
 		},
-		{
-			name: "SQL injection in headers",
-			request: func() *http.Request {
-				req := httptest.NewRequest("GET", "/", nil)
-				req.Header.Set("X-Test-Header", "' UNION SELECT null, username, password FROM users --")
-				return req
-			}(),
-			wasDetected: true,
-			message:     "detected in HTTP header X-Test-Header: ' UNION SELECT null, username, password FROM users --",
-		},
+		// {
+		// 	name: "SQL injection in headers",
+		// 	request: func() *http.Request {
+		// 		req := httptest.NewRequest("GET", "/", nil)
+		// 		req.Header.Set("X-Test-Header", "' UNION SELECT null, username, password FROM users --")
+		// 		return req
+		// 	}(),
+		// 	wasDetected: true,
+		// 	message:     "detected in HTTP header X-Test-Header: ' UNION SELECT null, username, password FROM users --",
+		// },
 		{
 			name: "SQL injection in cookies",
 			request: func() *http.Request {
