@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"net"
 	"server-ids/internal/models"
 	"server-ids/internal/sessions"
 	"testing"
@@ -52,12 +51,10 @@ func TestCreateUser(t *testing.T) {
 	db := NewAuthDBMemory(sessionsDB)
 	prevUsersLen := len(sessionsDB.Users)
 	newUser := models.User{
-		Username:            "newuser",
-		Password:            "thisismypassword",
-		Role:                "employee",
-		LastLoginDate:       time.Now(),
-		LastLoginIP:         net.ParseIP("202.28.138.47"),
-		FailedLoginAttempts: make(map[string]models.FailedLoginInfo),
+		Username:      "newuser",
+		Password:      "thisismypassword",
+		Role:          "employee",
+		LastLoginDate: time.Now(),
 	}
 	err := db.CreateUser(newUser)
 
@@ -71,12 +68,10 @@ func TestUpdateUser(t *testing.T) {
 	db := NewAuthDBMemory(sessionsDB)
 	user := sessionsDB.Users[0]
 	updatedUser := models.User{
-		Username:            "funguy123",
-		Password:            "updatedpassword",
-		Role:                "employee",
-		LastLoginDate:       time.Now(),
-		LastLoginIP:         net.ParseIP("202.28.138.47"),
-		FailedLoginAttempts: make(map[string]models.FailedLoginInfo),
+		Username:      "funguy123",
+		Password:      "updatedpassword",
+		Role:          "employee",
+		LastLoginDate: time.Now(),
 	}
 	err := db.UpdateUser(updatedUser)
 
@@ -91,12 +86,10 @@ func TestUpdateUser_NotFound(t *testing.T) {
 	sessionsDB := sessions.NewSessionsDB()
 	db := NewAuthDBMemory(sessionsDB)
 	user := models.User{
-		Username:            "idonotexist",
-		Password:            "updatedpassword",
-		Role:                "employee",
-		LastLoginDate:       time.Now(),
-		LastLoginIP:         net.ParseIP("202.28.138.47"),
-		FailedLoginAttempts: make(map[string]models.FailedLoginInfo),
+		Username:      "idonotexist",
+		Password:      "updatedpassword",
+		Role:          "employee",
+		LastLoginDate: time.Now(),
 	}
 	err := db.UpdateUser(user)
 
