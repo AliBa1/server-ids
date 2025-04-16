@@ -182,7 +182,7 @@ func TestPostRegister_UserExists(t *testing.T) {
 func TestGetUsersHandler(t *testing.T) {
 	rr := httptest.NewRecorder()
 
-	r, err := http.NewRequest(http.MethodPost, "/auth/users", nil)
+	r, err := http.NewRequest(http.MethodPost, "/users", nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -203,7 +203,7 @@ func TestGetUsersHandler(t *testing.T) {
 func TestGetUsersHandler_NoUsers(t *testing.T) {
 	rr := httptest.NewRecorder()
 
-	r, err := http.NewRequest(http.MethodPost, "/auth/users", nil)
+	r, err := http.NewRequest(http.MethodPost, "/users", nil)
 	if err != nil {
 		t.Error(err)
 	}
