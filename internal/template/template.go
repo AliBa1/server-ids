@@ -21,7 +21,7 @@ type ReturnData struct {
 
 func NewTemplate() *Templates {
 	return &Templates{
-		templates: template.Must(template.ParseGlob("internal/views/*.html")),
+		templates: template.Must(template.ParseGlob("web/templates/*.html")),
 	}
 }
 

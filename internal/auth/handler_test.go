@@ -21,7 +21,7 @@ func TestPostLogin(t *testing.T) {
 	formData.Set("username", "funguy123")
 	formData.Set("password", "admin12345")
 
-	r, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
+	r, err := http.NewRequest(http.MethodPost, "/login", strings.NewReader(formData.Encode()))
 	if err != nil {
 		t.Error(err)
 	}
@@ -48,7 +48,7 @@ func TestPostLogin_MissingPassword(t *testing.T) {
 	formData.Set("username", "notarealuser")
 	formData.Set("password", "")
 
-	r, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
+	r, err := http.NewRequest(http.MethodPost, "/login", strings.NewReader(formData.Encode()))
 	if err != nil {
 		t.Error(err)
 	}
@@ -73,7 +73,7 @@ func TestPostLogin_UserNotExist(t *testing.T) {
 	formData.Set("username", "notarealuser")
 	formData.Set("password", "admin12345")
 
-	r, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
+	r, err := http.NewRequest(http.MethodPost, "/login", strings.NewReader(formData.Encode()))
 	if err != nil {
 		t.Error(err)
 	}
@@ -99,7 +99,7 @@ func TestPostRegister(t *testing.T) {
 	formData.Set("username", "newuser")
 	formData.Set("password", "hiimanewuser")
 
-	r, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
+	r, err := http.NewRequest(http.MethodPost, "/login", strings.NewReader(formData.Encode()))
 	if err != nil {
 		t.Error(err)
 	}
@@ -128,7 +128,7 @@ func TestPostRegister_MissingPassword(t *testing.T) {
 	formData.Set("username", "newuser")
 	formData.Set("password", "")
 
-	r, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
+	r, err := http.NewRequest(http.MethodPost, "/login", strings.NewReader(formData.Encode()))
 	if err != nil {
 		t.Error(err)
 	}
@@ -157,7 +157,7 @@ func TestPostRegister_UserExists(t *testing.T) {
 	formData.Set("username", "funguy123")
 	formData.Set("password", "admin12345")
 
-	r, err := http.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(formData.Encode()))
+	r, err := http.NewRequest(http.MethodPost, "/login", strings.NewReader(formData.Encode()))
 	if err != nil {
 		t.Error(err)
 	}

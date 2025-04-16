@@ -1,0 +1,61 @@
+{{ block "login" .}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- <script src="/htmx/htmx.min.js"></script> -->
+    <script
+      src="https://unpkg.com/htmx.org@2.0.4"
+      integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+      crossorigin="anonymous"
+    ></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend:wght@100..900&family=Schoolbell&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/web/css/styles.css" />
+    <title>IDS | Login</title>
+  </head>
+  <body>
+    <main style="display: flex; flex-direction: column; align-items: center">
+      <h2>Server IDS</h2>
+      <form
+        action="/login"
+        method="post"
+        style="
+          display: flex;
+          flex-direction: column;
+          max-width: 450px;
+          width: 100%;
+          gap: 10px;
+        "
+      >
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required />
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required />
+
+        <button
+          type="submit"
+          style="
+            padding: 8px;
+            background-color: cornflowerblue;
+            color: white;
+            font-size: large;
+            border: 1px solid black;
+            border-radius: 8px;
+            cursor: pointer;
+          "
+        >
+          Login
+        </button>
+      </form>
+      <p style="color: red">{{ .Error}}</p>
+    </main>
+  </body>
+</html>
+{{ end }}

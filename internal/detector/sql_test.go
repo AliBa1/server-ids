@@ -50,7 +50,7 @@ func TestSQLDetection(t *testing.T) {
 				formData.Set("username", "user' #")
 				formData.Set("password", "password")
 
-				r := httptest.NewRequest("POST", "/auth/login", strings.NewReader(formData.Encode()))
+				r := httptest.NewRequest("POST", "/login", strings.NewReader(formData.Encode()))
 				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 				return r
 			}(),
@@ -64,7 +64,7 @@ func TestSQLDetection(t *testing.T) {
 				formData.Set("username", "D'Angelo")
 				formData.Set("password", "password")
 
-				r := httptest.NewRequest("POST", "/auth/login", strings.NewReader(formData.Encode()))
+				r := httptest.NewRequest("POST", "/login", strings.NewReader(formData.Encode()))
 				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 				return r
 			}(),
@@ -78,7 +78,7 @@ func TestSQLDetection(t *testing.T) {
 				formData.Set("username", "spider--man")
 				formData.Set("password", "password")
 
-				r := httptest.NewRequest("POST", "/auth/login", strings.NewReader(formData.Encode()))
+				r := httptest.NewRequest("POST", "/login", strings.NewReader(formData.Encode()))
 				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 				return r
 			}(),

@@ -9,12 +9,22 @@
     ></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend:wght@100..900&family=Schoolbell&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/web/css/styles.css" />
     <title>IDS | Users</title>
   </head>
   <body>
-    <a href="/docs">View Documents</a>
-    <h2 style="text-decoration: underline">Users</h2>
-    <p style="color: red;">{{ .Error }}</p>
+    <nav>
+      <a href="/docs">Documents</a>
+      <a href="/auth/users" class="active">Users</a>
+    </nav>
+
+    <p style="color: red">{{ .Error }}</p>
     <table style="border-collapse: collapse; margin: 20px 0">
       <tr style="background-color: #f2f2f2">
         <th style="padding: 12px; border: 1px solid #ccc; text-align: left">
@@ -32,7 +42,13 @@
         <td style="padding: 12px; border: 1px solid #ccc">{{ .Username }}</td>
         <td style="padding: 12px; border: 1px solid #ccc">{{ .Role }}</td>
         <td style="padding: 12px; border: 1px solid #ccc">
-          <select name="newRole" hx-patch="/users/{{ .Username }}/role" hx-target="body" hx-trigger="change" hx-include="this">
+          <select
+            name="newRole"
+            hx-patch="/users/{{ .Username }}/role"
+            hx-target="body"
+            hx-trigger="change"
+            hx-include="this"
+          >
             <option value="guest" {{ if eq .Role "guest" }}selected{{ end }}>guest</option>
             <option value="employee" {{ if eq .Role "employee" }}selected{{ end }}>employee</option>
             <option value="admin" {{ if eq .Role "admin" }}selected{{ end }}>admin</option>
@@ -41,8 +57,6 @@
       </tr>
       {{ end }}
     </table>
-
-    <!-- <section id="document-viewer"></section> -->
   </body>
 </html>
 {{ end }}

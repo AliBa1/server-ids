@@ -51,7 +51,7 @@ func TestXSSDetection(t *testing.T) {
 				formData.Set("username", "<img src='http://bad.url' onerror=alert(document.cookie);>")
 				formData.Set("password", "password")
 
-				r := httptest.NewRequest("POST", "/auth/login", strings.NewReader(formData.Encode()))
+				r := httptest.NewRequest("POST", "/login", strings.NewReader(formData.Encode()))
 				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 				return r
 			}(),
@@ -65,7 +65,7 @@ func TestXSSDetection(t *testing.T) {
 				formData.Set("username", "user")
 				formData.Set("password", "1>pass<3")
 
-				r := httptest.NewRequest("POST", "/auth/login", strings.NewReader(formData.Encode()))
+				r := httptest.NewRequest("POST", "/login", strings.NewReader(formData.Encode()))
 				r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 				return r
 			}(),
@@ -79,7 +79,7 @@ func TestXSSDetection(t *testing.T) {
 				formData.Set("username", "%3c3")
 				formData.Set("password", "password")
 
-				r := httptest.NewRequest("POST", "/auth/login", strings.NewReader(formData.Encode()))
+				r := httptest.NewRequest("POST", "/login", strings.NewReader(formData.Encode()))
 				return r
 			}(),
 			wasDetected: false,

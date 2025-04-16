@@ -19,6 +19,11 @@ func NewAuthHandler(service *AuthService, template *template.Templates) *AuthHan
 	return &AuthHandler{service: service, tmpl: template}
 }
 
+func (h *AuthHandler) GetLogin(w http.ResponseWriter, r *http.Request) {
+	data := template.ReturnData{Error: ""}
+	h.tmpl.Render(w, "login", data)
+}
+
 func (h *AuthHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")

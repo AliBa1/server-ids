@@ -15,11 +15,15 @@ import (
 )
 
 func main() {
+	// http.Handle("/web/", http.StripPrefix("/web/", http.FileServer(http.Dir("web"))))
+
 	r := mux.NewRouter()
+	r.PathPrefix("/web/").Handler(http.StripPrefix("/web/", http.FileServer(http.Dir("web"))))
+
 	sessionsDB := sessions.NewSessionsDB()
 
 	middleware := middleware.NewMiddleware(sessionsDB)
-	
+
 	// add to all other register routes
 	tmpl := template.NewTemplate()
 
@@ -35,8 +39,7 @@ func main() {
 	document.RegisterDocumentRoutes(r, middleware, documentService, sessionsDB, tmpl)
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		data := template.ReturnData{Error: ""}
-		tmpl.Render(w, "login", data)
+		http.Redirect(w, r, "/login", http.StatusFound)
 	})
 
 	fmt.Println("Listening on port 8080")

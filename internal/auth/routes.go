@@ -12,7 +12,8 @@ import (
 func RegisterAuthRoutes(r *mux.Router, m *middleware.Middleware, service *AuthService, template *template.Templates) {
 	handler := NewAuthHandler(service, template)
 
-	r.HandleFunc("/auth/login", m.ApplyMiddleware(handler.PostLogin)).Methods("POST")
+	r.HandleFunc("/login", m.ApplyMiddleware(handler.GetLogin)).Methods("GET")
+	r.HandleFunc("/login", m.ApplyMiddleware(handler.PostLogin)).Methods("POST")
 	r.HandleFunc("/auth/register", m.ApplyMiddleware(handler.PostRegister)).Methods("POST")
 	r.HandleFunc("/auth/users", m.Authorization(m.ApplyMiddleware(handler.GetUsers))).Methods("GET")
 }

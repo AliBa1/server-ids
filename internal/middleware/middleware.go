@@ -45,7 +45,6 @@ func (m *Middleware) Logger(next http.HandlerFunc) http.HandlerFunc {
 
 func (m *Middleware) Authorization(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Printf("%s\n", m.sessionsDB.Sessions)
 		d := detector.NewDetector()
 		d.AddService(&detector.BACDetection{
 			SessionsDB: m.sessionsDB,
