@@ -15,10 +15,10 @@ import (
 )
 
 func main() {
-	// http.Handle("/web/", http.StripPrefix("/web/", http.FileServer(http.Dir("web"))))
-
 	r := mux.NewRouter()
 	r.PathPrefix("/web/").Handler(http.StripPrefix("/web/", http.FileServer(http.Dir("web"))))
+
+	// db := database.NewDBConnection()
 
 	sessionsDB := sessions.NewSessionsDB()
 
