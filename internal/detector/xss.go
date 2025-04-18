@@ -39,7 +39,6 @@ func (x *XSSDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 
 	// check url
 	if checkXSS(decodedURL) {
-		fmt.Println("Checking URL:", decodedURL)
 		msg := "detected in url path: " + decodedURL
 		d.AddAlert(5, "medium", "XSS Attack", msg, ip)
 		found = true
@@ -69,7 +68,7 @@ func (x *XSSDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
-			fmt.Printf("something went wrong parsing form data")
+			return found, fmt.Errorf("something went wrong parsing form data")
 		}
 
 		contents := []string{}

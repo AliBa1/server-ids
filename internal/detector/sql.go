@@ -60,7 +60,7 @@ func (s *SQLDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
-			fmt.Printf("something went wrong parsing form data")
+			return found, fmt.Errorf("something went wrong parsing form data")
 		}
 
 		contents := []string{}

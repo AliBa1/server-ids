@@ -23,7 +23,6 @@ func (s *AuthService) Login(username string, password string) (uuid.UUID, error)
 	// OPTIONAL: hash passwords and compare to hashed
 
 	user, err := s.userRepo.GetUser(username)
-	fmt.Println("User retrieved", user)
 	if err != nil {
 		return uuid.Nil, err
 	}
