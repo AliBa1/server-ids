@@ -35,54 +35,6 @@ func NewDBConnection() *sql.DB {
 	return db
 }
 
-/*
-func NewTestDBConnection() *sql.DB {
-	workingDir, err := os.Getwd()
-	if err != nil {
-		log.Fatalf("Failed to get current working directory: %v", err)
-	}
-
-	projectRoot := filepath.Join(workingDir, "..", "..")
-
-	dbPath := filepath.Join(projectRoot, "database.db")
-
-	_, err = os.Stat(dbPath)
-	if err != nil || os.IsNotExist(err) {
-		log.Fatalf("Database file does not exist: %s", err.Error())
-	}
-
-	db, err := sql.Open("sqlite3", dbPath)
-	if err != nil {
-		log.Fatalf("Failed to open DB: %v", err)
-	}
-
-	err = db.Ping()
-	if err != nil {
-		log.Fatalf("Failed to ping DB: %v", err)
-	}
-
-	fmt.Println("Connected to database:", dbPath)
-	return db
-}
-*/
-
-/*
-func NewMockDBConnection() *sql.DB {
-	db, err := sql.Open("sqlite3", "mock.db")
-	if err != nil {
-		log.Fatalf("Failed to open DB: %s", err.Error())
-	}
-
-	err = db.Ping()
-	if err != nil {
-		log.Fatalf("Failed to ping DB: %s", err.Error())
-	}
-
-	fmt.Println("Connected to database:", "mock.db")
-	return db
-}
-*/
-
 func CreateMockDB() *sql.DB {
 	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
