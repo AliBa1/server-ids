@@ -18,7 +18,8 @@ import (
 func main() {
 	r := mux.NewRouter()
 	r.PathPrefix("/web/").Handler(http.StripPrefix("/web/", http.FileServer(http.Dir("web"))))
-
+	r.PathPrefix("/htmx/").Handler(http.StripPrefix("/htmx/", http.FileServer(http.Dir("htmx"))))
+	
 	db := database.NewDBConnection()
 	defer db.Close()
 
