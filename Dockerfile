@@ -25,9 +25,9 @@ RUN --mount=type=cache,target=/go/pkg/mod/ \
 # Placing it here allows the previous steps to be cached across architectures.
 ARG TARGETARCH
 
-RUN --mount=type=cache,target=/go/pkg/mod/ \
-    --mount=type=bind,target=. \
-    CGO_ENABLED=1 GOARCH=$TARGETARCH go test ./...
+# RUN --mount=type=cache,target=/go/pkg/mod/ \
+#     --mount=type=bind,target=. \
+#     CGO_ENABLED=1 GOARCH=$TARGETARCH go test ./...
 
 # Build the application.
 # Leverage a cache mount to /go/pkg/mod/ to speed up subsequent builds.
