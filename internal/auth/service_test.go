@@ -104,16 +104,3 @@ func TestRegister_UsernameTaken(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, len(ogUsers), len(curUsers))
 }
-
-// integration test: service and db interaction
-func TestGetUsersService(t *testing.T) {
-	db := database.CreateMockDB()
-	defer db.Close()
-	ur := user.NewUserRepository(db)
-	ar := NewAuthRepository(db)
-	service := NewAuthService(ar, ur)
-	users, err := service.GetAllUsers()
-
-	assert.NoError(t, err)
-	assert.NotEmpty(t, users)
-}

@@ -73,17 +73,3 @@ func (h *AuthHandler) PostRegister(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Fprintf(w, "Welcome %s! Your account has been created\n", username)
 }
-
-func (h *AuthHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
-	// fmt.Fprintln(w, "Getting users from the database...")
-	// fmt.Fprintln(w, "")
-	users, err := h.service.GetAllUsers()
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	data := template.ReturnData{Users: users}
-	h.tmpl.Render(w, "users", data)
-}

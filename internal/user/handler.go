@@ -20,6 +20,18 @@ func NewUserHandler(service *UserService, template *template.Templates, sessions
 	return &UserHandler{service: service, tmpl: template, sessions: sessions}
 }
 
+func (h *UserHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
+	users, err := h.service.GetAllUsers()
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data := template.ReturnData{Users: users}
+	h.tmpl.Render(w, "users", data)
+}
+
 func (h *UserHandler) UpdateRole(w http.ResponseWriter, r *http.Request) {
 	// track user who changed role?
 	vars := mux.Vars(r)

@@ -1,6 +1,7 @@
 package sessions_test
 
 import (
+	"net/http"
 	"server-ids/internal/auth"
 	"server-ids/internal/database"
 	"server-ids/internal/models"
@@ -41,88 +42,159 @@ func TestGetSessionUser_NotExist(t *testing.T) {
 	assert.Nil(t, user)
 }
 
-// func TestAddLoginKey(t *testing.T) {
-// 	sessionsDB := NewSessionsDB()
-// 	token := uuid.New()
-// 	username := "funguy123"
-// 	sessionsDB.AddSession(token, username)
+func TestGetUserFromRequest(t *testing.T) {
+	db := database.CreateMockDB()
+	defer db.Close()
+	sessions := sessions.NewSessions(db)
+	ar := auth.NewAuthRepository(db)
 
-// 	assert.Contains(t, sessionsDB.Sessions, token)
-// 	assert.Equal(t, sessionsDB.Sessions[token], username)
-// }
+	r, err := http.NewRequest(http.MethodGet, "/test", nil)
+	if err != nil {
+		t.Error(err)
+	}
+	key := uuid.New()
+	r.AddCookie(&http.Cookie{Name: "session_key", Value: key.String()})
+	testUser := *models.NewUser("funguy123", "admin12345", "admin")
+	ar.AddSession(key, testUser)
 
-// func TestGetUsername(t *testing.T) {
-// 	sessionsDB := NewSessionsDB()
-// 	token := uuid.New()
-// 	username := "funguy123"
-// 	sessionsDB.AddSession(token, username)
-// 	stored_username, err := sessionsDB.GetUsername(token)
+	user, err := sessions.GetUserFromRequest(r)
 
-// 	assert.NoError(t, err)
-// 	assert.Contains(t, sessionsDB.Sessions, token)
-// 	assert.Equal(t, username, stored_username)
-// }
+	assert.NoError(t, err)
+	assert.Equal(t, testUser.Username, user.Username)
+}
 
-// func TestGetUsername_NotExist(t *testing.T) {
-// 	sessionsDB := NewSessionsDB()
-// 	token := uuid.New()
-// 	_, err := sessionsDB.GetUsername(token)
+func TestGetUserFromRequest_NotExist(t *testing.T) {
+	db := database.CreateMockDB()
+	defer db.Close()
+	sessions := sessions.NewSessions(db)
+	ar := auth.NewAuthRepository(db)
 
-// 	assert.Error(t, err)
-// }
+	r, err := http.NewRequest(http.MethodGet, "/test", nil)
+	if err != nil {
+		t.Error(err)
+	}
+	key := uuid.New()
+	r.AddCookie(&http.Cookie{Name: "session_key", Value: key.String()})
+	testUser := *models.NewUser("fakeuser", "admin12345", "admin")
+	ar.AddSession(key, testUser)
 
-// func TestGetUser(t *testing.T) {
-// 	// sessionsDB := NewSessionsDB()
-// 	db := database.CreateMockDB()
-// 	defer db.Close()
-// 	sessions := sessions.NewSessions(db)
-// 	ar := auth.NewAuthRepository(db)
-// 	key := uuid.New()
-// 	ar.AddSession()
+	user, err := sessions.GetUserFromRequest(r)
 
-// 	username := "funguy123"
-// 	user, err := sessions.GetSessionUser(username)
+	assert.Error(t, err)
+	assert.Nil(t, user)
+}
 
-// 	assert.NoError(t, err)
-// 	assert.NotNil(t, user)
-// 	assert.Equal(t, username, user.Username)
-// }
+func TestIsUserLoggedIn(t *testing.T) {
+	db := database.CreateMockDB()
+	defer db.Close()
+	sessions := sessions.NewSessions(db)
+	ar := auth.NewAuthRepository(db)
 
-// func TestGetUser_NotExist(t *testing.T) {
-// 	sessionsDB := NewSessionsDB()
+	r, err := http.NewRequest(http.MethodGet, "/test", nil)
+	if err != nil {
+		t.Error(err)
+	}
+	key := uuid.New()
+	r.AddCookie(&http.Cookie{Name: "session_key", Value: key.String()})
+	testUser := *models.NewUser("funguy123", "admin12345", "admin")
+	ar.AddSession(key, testUser)
 
-// 	username := "usernotreal"
-// 	user, err := sessionsDB.GetUser(username)
+	isLoggedIn := sessions.IsUserLoggedIn(r)
 
-// 	assert.Error(t, err)
-// 	assert.Nil(t, user)
-// 	assert.Equal(t, fmt.Sprintf("user '%s' not found", username), err.Error())
-// }
+	assert.True(t, isLoggedIn)
+}
 
-// func TestIsUserLoggedIn(t *testing.T) {
-// 	sessionsDB := NewSessionsDB()
+func TestIsUserLoggedIn_Not(t *testing.T) {
+	db := database.CreateMockDB()
+	defer db.Close()
+	sessions := sessions.NewSessions(db)
 
-// 	r := httptest.NewRequest("GET", "/", nil)
-// 	sessionKey := uuid.New()
-// 	username := "funguy123"
-// 	sessionsDB.AddSession(sessionKey, username)
-// 	r.AddCookie(&http.Cookie{
-// 		Name:  "session_key",
-// 		Value: sessionKey.String(),
-// 	})
+	r, err := http.NewRequest(http.MethodGet, "/test", nil)
+	if err != nil {
+		t.Error(err)
+	}
 
-// 	assert.True(t, sessionsDB.IsUserLoggedIn(r))
-// }
+	isLoggedIn := sessions.IsUserLoggedIn(r)
 
-// func TestIsUserLoggedIn_NotLoggedIn(t *testing.T) {
-// 	sessionsDB := NewSessionsDB()
+	assert.False(t, isLoggedIn)
+}
 
-// 	invalidReq := httptest.NewRequest("GET", "/", nil)
-// 	sessionKey := uuid.New()
-// 	invalidReq.AddCookie(&http.Cookie{
-// 		Name:  "session_key",
-// 		Value: sessionKey.String(),
-// 	})
+func TestIsUserEmployee(t *testing.T) {
+	db := database.CreateMockDB()
+	defer db.Close()
+	sessions := sessions.NewSessions(db)
+	ar := auth.NewAuthRepository(db)
 
-// 	assert.False(t, sessionsDB.IsUserLoggedIn(invalidReq))
-// }
+	r, err := http.NewRequest(http.MethodGet, "/test", nil)
+	if err != nil {
+		t.Error(err)
+	}
+	key := uuid.New()
+	r.AddCookie(&http.Cookie{Name: "session_key", Value: key.String()})
+	testUser := *models.NewUser("1819twenty", "emp12345", "employee")
+	ar.AddSession(key, testUser)
+
+	isEmployee := sessions.IsUserEmployee(r)
+
+	assert.True(t, isEmployee)
+}
+
+func TestIsUserEmployee_Not(t *testing.T) {
+	db := database.CreateMockDB()
+	defer db.Close()
+	sessions := sessions.NewSessions(db)
+	ar := auth.NewAuthRepository(db)
+
+	r, err := http.NewRequest(http.MethodGet, "/test", nil)
+	if err != nil {
+		t.Error(err)
+	}
+	key := uuid.New()
+	r.AddCookie(&http.Cookie{Name: "session_key", Value: key.String()})
+	testUser := *models.NewUser("secure21", "guest12345", "guest")
+	ar.AddSession(key, testUser)
+
+	isEmployee := sessions.IsUserEmployee(r)
+
+	assert.False(t, isEmployee)
+}
+
+func TestIsUserAdmin(t *testing.T) {
+	db := database.CreateMockDB()
+	defer db.Close()
+	sessions := sessions.NewSessions(db)
+	ar := auth.NewAuthRepository(db)
+
+	r, err := http.NewRequest(http.MethodGet, "/test", nil)
+	if err != nil {
+		t.Error(err)
+	}
+	key := uuid.New()
+	r.AddCookie(&http.Cookie{Name: "session_key", Value: key.String()})
+	testUser := *models.NewUser("funguy123", "admin12345", "admin")
+	ar.AddSession(key, testUser)
+
+	isAdmin := sessions.IsUserAdmin(r)
+
+	assert.True(t, isAdmin)
+}
+
+func TestIsUserAdmin_Not(t *testing.T) {
+	db := database.CreateMockDB()
+	defer db.Close()
+	sessions := sessions.NewSessions(db)
+	ar := auth.NewAuthRepository(db)
+
+	r, err := http.NewRequest(http.MethodGet, "/test", nil)
+	if err != nil {
+		t.Error(err)
+	}
+	key := uuid.New()
+	r.AddCookie(&http.Cookie{Name: "session_key", Value: key.String()})
+	testUser := *models.NewUser("secure21", "guest12345", "guest")
+	ar.AddSession(key, testUser)
+
+	isAdmin := sessions.IsUserAdmin(r)
+
+	assert.False(t, isAdmin)
+}

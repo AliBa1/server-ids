@@ -50,8 +50,3 @@ func (s *AuthService) Register(username string, password string) error {
 	s.userRepo.CreateUser(*newUser)
 	return nil
 }
-
-func (s *AuthService) GetAllUsers() ([]models.User, error) {
-	users, err := s.userRepo.GetUsers()
-	return users, err
-}

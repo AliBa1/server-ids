@@ -13,6 +13,11 @@ func NewUserService(ur *UserRepository) *UserService {
 	return &UserService{userRepo: ur}
 }
 
+func (u *UserService) GetAllUsers() ([]models.User, error) {
+	users, err := u.userRepo.GetUsers()
+	return users, err
+}
+
 func (u *UserService) UpdateRole(username string, newRole string) error {
 	user, err := u.userRepo.GetUser(username)
 	if err != nil {

@@ -15,5 +15,5 @@ func RegisterAuthRoutes(r *mux.Router, m *middleware.Middleware, service *AuthSe
 	r.HandleFunc("/login", m.ApplyMiddleware(handler.GetLogin)).Methods("GET")
 	r.HandleFunc("/login", m.ApplyMiddleware(handler.PostLogin)).Methods("POST")
 	r.HandleFunc("/register", m.ApplyMiddleware(handler.PostRegister)).Methods("POST")
-	r.HandleFunc("/users", m.Authorization(m.ApplyMiddleware(handler.GetUsers))).Methods("GET")
+	// r.HandleFunc("/users", m.Authorization(m.ApplyMiddleware(handler.GetUsers))).Methods("GET")
 }
