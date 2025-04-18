@@ -83,10 +83,10 @@ func NewMockDBConnection() *sql.DB {
 }
 */
 
-func CreateMockDB() (*sql.DB, error) {
+func CreateMockDB() *sql.DB {
 	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
-		return nil, fmt.Errorf("failed to open mock database: %v", err)
+		log.Fatalf("Failed to open mock database: %s", err.Error())
 	}
 
 	createDocumentsTable := `
@@ -99,7 +99,7 @@ func CreateMockDB() (*sql.DB, error) {
 	`
 	_, err = db.Exec(createDocumentsTable)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create documents table: %v", err)
+		log.Fatalf("Failed to create documents table: %s", err.Error())
 	}
 
 	createUsersTable := `
@@ -113,19 +113,19 @@ func CreateMockDB() (*sql.DB, error) {
 	`
 	_, err = db.Exec(createUsersTable)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create users table: %v", err)
+		log.Fatalf("Failed to create users table: %s", err.Error())
 	}
 
 	createSessionsTable := `
 		CREATE TABLE IF NOT EXISTS sessions (
 			key TEXT PRIMARY KEY,
-			user_id INTEGER NOT NULL,
-			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+			username TEXT NOT NULL,
+			FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 		);
 	`
 	_, err = db.Exec(createSessionsTable)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create sessions table: %v", err)
+		log.Fatalf("Failed to create sessions table: %s", err.Error())
 	}
 
 	populateUsers := `
@@ -149,7 +149,7 @@ func CreateMockDB() (*sql.DB, error) {
 	`
 	_, err = db.Exec(populateUsers)
 	if err != nil {
-		return nil, fmt.Errorf("failed to insert users data: %v", err)
+		log.Fatalf("failed to insert users data: %s", err.Error())
 	}
 
 	populateDocuments := `
@@ -160,8 +160,8 @@ func CreateMockDB() (*sql.DB, error) {
 	`
 	_, err = db.Exec(populateDocuments)
 	if err != nil {
-		return nil, fmt.Errorf("failed to insert documents data: %v", err)
+		log.Fatalf("failed to insert documents data: %s", err.Error())
 	}
 
-	return db, nil
+	return db
 }

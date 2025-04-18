@@ -18,6 +18,6 @@ CREATE TABLE IF NOT EXISTS users (
 -- Sessions
 CREATE TABLE IF NOT EXISTS sessions (
 	key TEXT PRIMARY KEY,
-	user_id INTEGER NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+	username TEXT NOT NULL,
+  FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 );

@@ -1,25 +1,26 @@
 package document
 
-import (
-	"server-ids/internal/models"
-)
+import "server-ids/internal/models"
 
 // handles buisness logic and calls database
 
 type DocsService struct {
-	db *DocsDBMemory
+	docRepo *DocsRepository
 }
 
-func NewDocsService(db *DocsDBMemory) *DocsService {
-	return &DocsService{db: db}
+func NewDocsService(dr *DocsRepository) *DocsService {
+	return &DocsService{docRepo: dr}
 }
 
 func (d *DocsService) GetDocs() ([]models.Document, error) {
-	docs, err := d.db.GetAllDocs()
+	docs, err := d.docRepo.GetDocs()
 	return docs, err
 }
 
-func (d *DocsService) GetDoc(title string) (models.Document, error) {
-	doc, err := d.db.GetDoc(title)
+func (d *DocsService) GetDoc(title string) (*models.Document, error) {
+	doc, err := d.docRepo.GetDoc(title)
+	if err != nil {
+		return nil, err
+	}
 	return doc, err
 }

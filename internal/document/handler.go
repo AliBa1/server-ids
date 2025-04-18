@@ -10,13 +10,13 @@ import (
 )
 
 type DocsHandler struct {
-	service    *DocsService
-	sessionsDB *sessions.SessionsDB
-	tmpl       *template.Templates
+	service  *DocsService
+	sessions *sessions.Sessions
+	tmpl     *template.Templates
 }
 
-func NewDocsHandler(service *DocsService, sDB *sessions.SessionsDB, template *template.Templates) *DocsHandler {
-	return &DocsHandler{service: service, sessionsDB: sDB, tmpl: template}
+func NewDocsHandler(service *DocsService, sessions *sessions.Sessions, template *template.Templates) *DocsHandler {
+	return &DocsHandler{service: service, sessions: sessions, tmpl: template}
 }
 
 func (h *DocsHandler) GetDocs(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +40,7 @@ func (h *DocsHandler) GetDoc(w http.ResponseWriter, r *http.Request) {
 	title := vars["title"]
 	data := template.ReturnData{}
 
-	var doc models.Document
+	var doc *models.Document
 	var err error
 	doc, err = h.service.GetDoc(title)
 	if err != nil {
@@ -49,20 +49,20 @@ func (h *DocsHandler) GetDoc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !h.sessionsDB.IsUserLoggedIn(r) {
+	if !h.sessions.IsUserLoggedIn(r) {
 		data.Error = "Login to access documents"
 		h.tmpl.Render(w, "document", data)
 		return
 	}
 
-	if doc.IsLocked && !h.sessionsDB.IsUserEmployee(r) {
+	if doc.IsLocked && !h.sessions.IsUserEmployee(r) {
 		data.Error = "You don't have access to locked documents"
 		h.tmpl.Render(w, "document", data)
 		return
 	}
 
 	if r.Header.Get("HX-Request") == "true" {
-		data.Document = doc
+		data.Document = *doc
 		h.tmpl.Render(w, "document", data)
 		return
 	}

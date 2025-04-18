@@ -8,8 +8,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func RegisterDocumentRoutes(r *mux.Router, m *middleware.Middleware, service *DocsService, sDB *sessions.SessionsDB, template *template.Templates) {
-	handler := NewDocsHandler(service, sDB, template)
+func RegisterDocumentRoutes(r *mux.Router, m *middleware.Middleware, service *DocsService, sessions *sessions.Sessions, template *template.Templates) {
+	handler := NewDocsHandler(service, sessions, template)
 
 	r.HandleFunc("/docs", m.ApplyMiddleware(handler.GetDocs)).Methods("GET")
 	r.HandleFunc("/docs/{title}", m.ApplyMiddleware(handler.GetDoc)).Methods("GET")

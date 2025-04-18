@@ -1,10 +1,14 @@
-package detector
+package detector_test
 
 import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"server-ids/internal/auth"
+	"server-ids/internal/database"
+	"server-ids/internal/detector"
 	"server-ids/internal/sessions"
+	"server-ids/internal/user"
 	"strings"
 	"testing"
 
@@ -56,21 +60,27 @@ func TestBACDetection(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			detector := NewDetector()
-			sessionsDB := sessions.NewSessionsDB()
+			d := detector.NewDetector()
+			db := database.CreateMockDB()
+			defer db.Close()
+			ar := auth.NewAuthRepository(db)
+			ur := user.NewUserRepository(db)
+			user, err := ur.GetUser("secure21")
+			assert.NoError(t, err)
+			sessions := sessions.NewSessions(db)
 			sessionID := []byte("00000000-0000-0000-0000-000000000000")
 			sessionUUID, _ := uuid.FromBytes(sessionID)
-			sessionsDB.AddSession(sessionUUID, "secure21")
-			bacDetection := &BACDetection{
-				SessionsDB: sessionsDB,
+			ar.AddSession(sessionUUID, *user)
+			bacDetection := &detector.BACDetection{
+				Sessions: sessions,
 			}
 
-			found, err := bacDetection.Run(httptest.NewRecorder(), test.request, detector)
+			found, err := bacDetection.Run(httptest.NewRecorder(), test.request, d)
 
 			assert.NoError(t, err)
 			assert.Equal(t, test.wasDetected, found)
 			messages := []string{}
-			for _, alert := range detector.Alerts {
+			for _, alert := range d.Alerts {
 				messages = append(messages, alert.Message)
 			}
 			assert.Contains(t, messages, test.message)

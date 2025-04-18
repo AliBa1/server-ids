@@ -2,6 +2,7 @@ package user
 
 import (
 	"database/sql"
+	"errors"
 	"server-ids/internal/models"
 )
 
@@ -44,15 +45,15 @@ func (r *UserRepository) GetUsers() ([]models.User, error) {
 
 func (r *UserRepository) GetUser(username string) (*models.User, error) {
 	// query := `SELECT username, role, last_login_date FROM users WHERE username = ?;`
-	query := `SELECT username, role FROM users WHERE username = ?;`
+	query := `SELECT username, password, role FROM users WHERE username = ?;`
 	row := r.db.QueryRow(query, username)
 
 	var user models.User
 	// err := row.Scan(&user.Username, &user.Role, &user.LastLoginDate)
-	err := row.Scan(&user.Username, &user.Role)
+	err := row.Scan(&user.Username, &user.Password, &user.Role)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil
+			return nil, errors.New("user '" + username + "' does not exist")
 		}
 		return nil, err
 	}

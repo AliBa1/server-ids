@@ -1,12 +1,13 @@
-package user
+package user_test
 
 import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"server-ids/internal/auth"
+	"server-ids/internal/database"
 	"server-ids/internal/sessions"
 	"server-ids/internal/template"
+	"server-ids/internal/user"
 	"strings"
 	"testing"
 
@@ -27,24 +28,18 @@ func TestUpdateRoleHandler(t *testing.T) {
 
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	sessionsDB := sessions.NewSessionsDB()
-	authDB := auth.NewAuthDBMemory(sessionsDB)
-	service := NewUserService(authDB)
+	db := database.CreateMockDB()
+	defer db.Close()
+	sessions := sessions.NewSessions(db)
+	ur := user.NewUserRepository(db)
+	service := user.NewUserService(ur)
 	tmpl := template.NewTestTemplate()
-	handler := NewUserHandler(service, tmpl)
+	handler := user.NewUserHandler(service, tmpl, sessions)
 
 	// use this if there are route variables
 	router := mux.NewRouter()
 	router.HandleFunc("/users/{username}/role", handler.UpdateRole).Methods("PATCH")
 	router.ServeHTTP(rr, r)
-
-	// assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
-	// defer rr.Result().Body.Close()
-
-	// responseMsg, err := io.ReadAll(rr.Body)
-	// assert.NoError(t, err)
-	// assert.NotEmpty(t, responseMsg)
-	// assert.Equal(t, "patrick now has the admin role\n", string(responseMsg))
 
 	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
 	assert.NoError(t, err)
@@ -64,25 +59,19 @@ func TestUpdateRoleHandler_NoRole(t *testing.T) {
 
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	sessionsDB := sessions.NewSessionsDB()
-	authDB := auth.NewAuthDBMemory(sessionsDB)
-	service := NewUserService(authDB)
+	db := database.CreateMockDB()
+	defer db.Close()
+	sessions := sessions.NewSessions(db)
+	ur := user.NewUserRepository(db)
+	service := user.NewUserService(ur)
 	tmpl := template.NewTestTemplate()
-	handler := NewUserHandler(service, tmpl)
+	handler := user.NewUserHandler(service, tmpl, sessions)
 
 	// use this if there are route variables
 	router := mux.NewRouter()
 	router.HandleFunc("/users/{username}/role", handler.UpdateRole).Methods("PATCH")
 	router.ServeHTTP(rr, r)
 
-	// assert.Equal(t, http.StatusBadRequest, rr.Result().StatusCode)
-	// defer rr.Result().Body.Close()
-
-	// responseMsg, err := io.ReadAll(rr.Body)
-	// assert.NoError(t, err)
-	// assert.NotEmpty(t, responseMsg)
-	// assert.Equal(t, "Missing username or new role\n", string(responseMsg))
-	
 	assert.Equal(t, http.StatusOK, rr.Result().StatusCode)
 	assert.NoError(t, err)
 	assert.Equal(t, "users", tmpl.LastRenderedBlock)

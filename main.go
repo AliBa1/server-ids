@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"server-ids/internal/auth"
+	"server-ids/internal/database"
 	"server-ids/internal/document"
 	"server-ids/internal/middleware"
 	"server-ids/internal/sessions"
@@ -18,25 +19,27 @@ func main() {
 	r := mux.NewRouter()
 	r.PathPrefix("/web/").Handler(http.StripPrefix("/web/", http.FileServer(http.Dir("web"))))
 
-	// db := database.NewDBConnection()
+	db := database.NewDBConnection()
+	defer db.Close()
+	
+	userRepo := user.NewUserRepository(db)
+	authRepo := auth.NewAuthRepository(db)
+	docRepo := document.NewDocRepository(db)
 
-	sessionsDB := sessions.NewSessionsDB()
+	sessions := sessions.NewSessions(db)
 
-	middleware := middleware.NewMiddleware(sessionsDB)
+	middleware := middleware.NewMiddleware(sessions)
 
-	// add to all other register routes
 	tmpl := template.NewTemplate()
 
-	authDB := auth.NewAuthDBMemory(sessionsDB)
-	authService := auth.NewAuthService(authDB)
+	authService := auth.NewAuthService(authRepo, userRepo)
 	auth.RegisterAuthRoutes(r, middleware, authService, tmpl)
 
-	userService := user.NewUserService(authDB)
-	user.RegisterUserRoutes(r, middleware, userService, tmpl)
+	userService := user.NewUserService(userRepo)
+	user.RegisterUserRoutes(r, middleware, userService, tmpl, sessions)
 
-	docsDB := document.NewDocsDBMemory()
-	documentService := document.NewDocsService(docsDB)
-	document.RegisterDocumentRoutes(r, middleware, documentService, sessionsDB, tmpl)
+	documentService := document.NewDocsService(docRepo)
+	document.RegisterDocumentRoutes(r, middleware, documentService, sessions, tmpl)
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", http.StatusFound)

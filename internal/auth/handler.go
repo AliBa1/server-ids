@@ -31,7 +31,7 @@ func (h *AuthHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Missing username or password", http.StatusBadRequest)
 		return
 	}
-	token, err := h.service.Login(username, password)
+	key, err := h.service.Login(username, password)
 
 	// tmpl := template.NewTemplate()
 	if err != nil {
@@ -42,7 +42,7 @@ func (h *AuthHandler) PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_key",
-		Value:    token.String(),
+		Value:    key.String(),
 		Expires:  time.Now().Add(60 * 24 * time.Hour),
 		HttpOnly: true, // protection from man-in-the-middle attacks
 		Path:     "/",
@@ -63,6 +63,12 @@ func (h *AuthHandler) PostRegister(w http.ResponseWriter, r *http.Request) {
 	err := h.service.Register(username, password)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	_, err = h.service.Login(username, password)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	fmt.Fprintf(w, "Welcome %s! Your account has been created\n", username)
