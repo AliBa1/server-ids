@@ -12,6 +12,13 @@ ARG GO_VERSION=1.23.0
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS build
 WORKDIR /src
 
+# Install dependencies for cgo (Linux-based)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    libc6-dev \
+    pkg-config
+
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /go/pkg/mod/ to speed up subsequent builds.
 # Leverage bind mounts to go.sum and go.mod to avoid having to copy them into
@@ -25,9 +32,10 @@ RUN --mount=type=cache,target=/go/pkg/mod/ \
 # Placing it here allows the previous steps to be cached across architectures.
 ARG TARGETARCH
 
-# RUN --mount=type=cache,target=/go/pkg/mod/ \
-#     --mount=type=bind,target=. \
-#     CGO_ENABLED=1 GOARCH=$TARGETARCH go test ./...
+# Run Tests
+RUN --mount=type=cache,target=/go/pkg/mod/ \
+    --mount=type=bind,target=. \
+    CGO_ENABLED=1 GOARCH=$TARGETARCH go test ./...
 
 # Build the application.
 # Leverage a cache mount to /go/pkg/mod/ to speed up subsequent builds.
