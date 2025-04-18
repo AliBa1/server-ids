@@ -36,11 +36,11 @@ func (d *Detector) Run(w http.ResponseWriter, r *http.Request) {
 func (d *Detector) AddAlert(sID int, severity string, attackType string, message string, sourceIP net.IP) {
 	d.Alerts = append(d.Alerts, Alert{
 		SignatureID: sID,
-		Severity:   severity,
-		AttackType: attackType,
-		Time:       time.Now(),
-		Message:    message,
-		SourceIP:   sourceIP,
+		Severity:    severity,
+		AttackType:  attackType,
+		Time:        time.Now(),
+		Message:     message,
+		SourceIP:    sourceIP,
 	})
 }
 

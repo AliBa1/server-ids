@@ -21,7 +21,7 @@ func main() {
 
 	db := database.NewDBConnection()
 	defer db.Close()
-	
+
 	userRepo := user.NewUserRepository(db)
 	authRepo := auth.NewAuthRepository(db)
 	docRepo := document.NewDocRepository(db)

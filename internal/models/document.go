@@ -8,8 +8,8 @@ type Document struct {
 
 func NewDocument(title string, content string, isLocked bool) *Document {
 	return &Document{
-		Title: title,
-		Content: content,
+		Title:    title,
+		Content:  content,
 		IsLocked: isLocked,
 		// date created?
 	}
