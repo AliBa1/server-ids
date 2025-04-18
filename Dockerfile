@@ -14,10 +14,9 @@ WORKDIR /src
 
 # Install dependencies for cgo (Linux-based)
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    gcc \
-    libc6-dev \
-    pkg-config
+    gcc-aarch64-linux-gnu \
+    g++-aarch64-linux-gnu \
+    libc6-dev-arm64-cross
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /go/pkg/mod/ to speed up subsequent builds.
