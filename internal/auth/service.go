@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"server-ids/internal/models"
+	"server-ids/internal/user"
 
 	"github.com/google/uuid"
 )
@@ -10,18 +11,19 @@ import (
 // handles buisness logic and calls database
 
 type AuthService struct {
-	db *AuthDBMemory
+	authRepo *AuthRepository
+	userRepo *user.UserRepository
 }
 
-func NewAuthService(db *AuthDBMemory) *AuthService {
-	return &AuthService{db: db}
+func NewAuthService(ar *AuthRepository, ur *user.UserRepository) *AuthService {
+	return &AuthService{authRepo: ar, userRepo: ur}
 }
 
 func (s *AuthService) Login(username string, password string) (uuid.UUID, error) {
 	// OPTIONAL: hash passwords and compare to hashed
 
-	// check if matches a user
-	user, err := s.db.GetUser(username)
+	user, err := s.userRepo.GetUser(username)
+	fmt.Println("User retrieved", user)
 	if err != nil {
 		return uuid.Nil, err
 	}
@@ -34,23 +36,17 @@ func (s *AuthService) Login(username string, password string) (uuid.UUID, error)
 		return uuid.Nil, fmt.Errorf("username or password doesn't match")
 	}
 
-	// login successful, give session token
 	token := uuid.New()
-	s.db.SessionsDB.AddSession(token, username)
+	s.authRepo.AddSession(token, *user)
 	return token, nil
 }
 
 func (s *AuthService) Register(username string, password string) error {
-	userExists, _ := s.db.GetUser(username)
+	userExists, _ := s.userRepo.GetUser(username)
 	if userExists != nil {
 		return fmt.Errorf("username is taken")
 	}
 	newUser := models.NewUser(username, password, "guest")
-	s.db.CreateUser(*newUser)
+	s.userRepo.CreateUser(*newUser)
 	return nil
-}
-
-func (s *AuthService) GetAllUsers() ([]models.User, error) {
-	users, err := s.db.GetUsers()
-	return users, err
 }

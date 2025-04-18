@@ -1,7 +1,9 @@
 package auth
 
 import (
+	"server-ids/internal/database"
 	"server-ids/internal/sessions"
+	"server-ids/internal/user"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,90 +11,96 @@ import (
 
 // integration test: service and db interaction
 func TestLogin(t *testing.T) {
-	sessionsDB := sessions.NewSessionsDB()
-	db := NewAuthDBMemory(sessionsDB)
-	service := NewAuthService(db)
+	db := database.CreateMockDB()
+	defer db.Close()
+	ur := user.NewUserRepository(db)
+	ar := NewAuthRepository(db)
+	service := NewAuthService(ar, ur)
+	sessions := sessions.NewSessions(db)
+
 	username := "funguy123"
 	password := "admin12345"
-	token, err := service.Login(username, password)
+	key, err := service.Login(username, password)
 
 	assert.NoError(t, err)
-	assert.NotEmpty(t, token)
-	assert.Equal(t, username, db.SessionsDB.Sessions[token])
+	assert.NotEmpty(t, key)
+	loggedInUser, err := sessions.GetSessionUser(key)
+	assert.NoError(t, err)
+	assert.Equal(t, username, loggedInUser.Username)
 }
 
 // integration test: service and db interaction
 func TestLogin_InvalidUser(t *testing.T) {
-	sessionsDB := sessions.NewSessionsDB()
-	db := NewAuthDBMemory(sessionsDB)
-	service := NewAuthService(db)
+	db := database.CreateMockDB()
+	defer db.Close()
+	ur := user.NewUserRepository(db)
+	ar := NewAuthRepository(db)
+	service := NewAuthService(ar, ur)
+
 	username := "notarealuser"
 	password := "admin12345"
-	token, err := service.Login(username, password)
+	key, err := service.Login(username, password)
 
 	assert.Error(t, err)
-	assert.Empty(t, token)
-	assert.Empty(t, db.SessionsDB.Sessions[token])
+	assert.Empty(t, key)
 }
 
 // integration test: service and db interaction
 func TestLogin_WrongPassword(t *testing.T) {
-	sessionsDB := sessions.NewSessionsDB()
-	db := NewAuthDBMemory(sessionsDB)
-	service := NewAuthService(db)
+	db := database.CreateMockDB()
+	defer db.Close()
+	ur := user.NewUserRepository(db)
+	ar := NewAuthRepository(db)
+	service := NewAuthService(ar, ur)
+
 	username := "funguy123"
 	password := "wrongpassword"
-	token, err := service.Login(username, password)
+	key, err := service.Login(username, password)
 
 	assert.Error(t, err)
-	assert.Empty(t, token)
-	assert.Empty(t, db.SessionsDB.Sessions[token])
+	assert.Empty(t, key)
 	// add checker for failed login attempts updated
 }
 
 // integration test: service and db interaction
 func TestRegister(t *testing.T) {
-	sessionsDB := sessions.NewSessionsDB()
-	db := NewAuthDBMemory(sessionsDB)
-	service := NewAuthService(db)
-	dbUsersLen := len(sessionsDB.Users)
-	// test working pass by reference
-	serviceUserLen := len(service.db.SessionsDB.Users)
+	db := database.CreateMockDB()
+	defer db.Close()
+	ur := user.NewUserRepository(db)
+	ar := NewAuthRepository(db)
+	service := NewAuthService(ar, ur)
+
+	ogUsers, err := ur.GetUsers()
+	assert.NoError(t, err)
+
 	username := "newuser"
 	password := "iamanewuser"
-	err := service.Register(username, password)
-
+	err = service.Register(username, password)
 	assert.NoError(t, err)
-	assert.Equal(t, dbUsersLen+1, len(sessionsDB.Users))
-	// test working pass by reference
-	assert.Equal(t, serviceUserLen+1, len(service.db.SessionsDB.Users))
+
+	curUsers, err := ur.GetUsers()
+	assert.NoError(t, err)
+
+	assert.Equal(t, len(ogUsers)+1, len(curUsers))
 }
 
 // integration test: service and db interaction
 func TestRegister_UsernameTaken(t *testing.T) {
-	sessionsDB := sessions.NewSessionsDB()
-	db := NewAuthDBMemory(sessionsDB)
-	service := NewAuthService(db)
-	dbUsersLen := len(sessionsDB.Users)
-	// test working pass by reference
-	serviceUserLen := len(service.db.SessionsDB.Users)
+	db := database.CreateMockDB()
+	defer db.Close()
+	ur := user.NewUserRepository(db)
+	ar := NewAuthRepository(db)
+	service := NewAuthService(ar, ur)
+
+	ogUsers, err := ur.GetUsers()
+	assert.NoError(t, err)
+
 	username := "funguy123"
 	password := "iamanewuser"
-	err := service.Register(username, password)
-
+	err = service.Register(username, password)
 	assert.Error(t, err)
-	assert.Equal(t, dbUsersLen, len(sessionsDB.Users))
-	// test working pass by reference
-	assert.Equal(t, serviceUserLen, len(service.db.SessionsDB.Users))
-}
 
-// integration test: service and db interaction
-func TestGetUsersService(t *testing.T) {
-	sessionsDB := sessions.NewSessionsDB()
-	db := NewAuthDBMemory(sessionsDB)
-	service := NewAuthService(db)
-	users, err := service.GetAllUsers()
-
+	curUsers, err := ur.GetUsers()
 	assert.NoError(t, err)
-	assert.NotEmpty(t, users)
+	assert.Equal(t, len(ogUsers), len(curUsers))
 }

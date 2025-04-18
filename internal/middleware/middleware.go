@@ -9,13 +9,15 @@ import (
 )
 
 type Middleware struct {
-	chain      []func(http.HandlerFunc) http.HandlerFunc
-	sessionsDB *sessions.SessionsDB
+	chain []func(http.HandlerFunc) http.HandlerFunc
+	// sessionsDB *sessions.SessionsDB
+	Sessions *sessions.Sessions
 }
 
 // runs in reverse order
-func NewMiddleware(sDB *sessions.SessionsDB) *Middleware {
-	m := &Middleware{sessionsDB: sDB}
+func NewMiddleware(s *sessions.Sessions) *Middleware {
+	// m := &Middleware{sessionsDB: sDB}
+	m := &Middleware{Sessions: s}
 	m.addToChain(m.Logger)
 	// m.addToChain(m.Authorization)
 	m.addToChain(m.IDS)
@@ -47,11 +49,12 @@ func (m *Middleware) Authorization(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		d := detector.NewDetector()
 		d.AddService(&detector.BACDetection{
-			SessionsDB: m.sessionsDB,
+			// SessionsDB: m.sessionsDB,
+			Sessions: m.Sessions,
 		})
 		d.Run(w, r)
 
-		if !m.sessionsDB.IsUserLoggedIn(r) {
+		if !m.Sessions.IsUserLoggedIn(r) {
 			http.Error(w, "Unauthorized: Login to gain access to this route", http.StatusUnauthorized)
 			return
 		}
@@ -77,7 +80,7 @@ func (m *Middleware) IDS(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		d.AddService(&detector.BACDetection{
-			SessionsDB: m.sessionsDB,
+			Sessions: m.Sessions,
 		})
 
 		d.Run(w, r)
@@ -85,12 +88,9 @@ func (m *Middleware) IDS(next http.HandlerFunc) http.HandlerFunc {
 		// if possibility of Login attack
 		// 		detector.AddService(&LoginDetection{})
 
-		// if possibility of XSS attack
-		// 		detector.AddService(&XSSDetection{})
-
 		// if possibility of DDoS attack
 		// 		detector.AddService(&DDoSDetection{})
-		
+
 		next(w, r)
 	}
 }

@@ -25,6 +25,9 @@
     </nav>
 
     <p style="color: red">{{ .Error }}</p>
+    {{ if .Error }}
+    <script>alert("{{ .Error }}");</script>
+    {{ end }}
     <table style="border-collapse: collapse; margin: 20px 0">
       <tr style="background-color: #f2f2f2">
         <th style="padding: 12px; border: 1px solid #ccc; text-align: left">

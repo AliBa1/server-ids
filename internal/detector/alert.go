@@ -34,7 +34,7 @@ func (a *Alert) LogToConsole() {
 }
 
 func (a *Alert) LogToFile() {
-	
+
 }
 
 func (a *Alert) WriteToUser() {

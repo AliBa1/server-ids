@@ -1,6 +1,7 @@
 package document
 
 import (
+	"server-ids/internal/database"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -8,8 +9,9 @@ import (
 
 // integration test: service and db interaction
 func TestGetDocsService(t *testing.T) {
-	db := NewDocsDBMemory()
-	service := NewDocsService(db)
+	db := database.CreateMockDB()
+	dr := NewDocRepository(db)
+	service := NewDocsService(dr)
 	docs, err := service.GetDocs()
 
 	assert.NoError(t, err)
@@ -18,8 +20,9 @@ func TestGetDocsService(t *testing.T) {
 
 // integration test: service and db interaction
 func TestGetDocService(t *testing.T) {
-	db := NewDocsDBMemory()
-	service := NewDocsService(db)
+	db := database.CreateMockDB()
+	dr := NewDocRepository(db)
+	service := NewDocsService(dr)
 	doc, err := service.GetDoc("Top Secret Case Study")
 
 	assert.NoError(t, err)
@@ -28,8 +31,9 @@ func TestGetDocService(t *testing.T) {
 
 // integration test: service and db interaction
 func TestGetDocService_NotFound(t *testing.T) {
-	db := NewDocsDBMemory()
-	service := NewDocsService(db)
+	db := database.CreateMockDB()
+	dr := NewDocRepository(db)
+	service := NewDocsService(dr)
 	doc, err := service.GetDoc("Does Not Exist")
 
 	assert.Error(t, err)
