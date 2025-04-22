@@ -58,13 +58,14 @@ func TestAddAlert(t *testing.T) {
 
 	alert := Alert{
 		SignatureID: 1,
+		Revision:    1,
 		Severity:    "high",
 		AttackType:  "SQL Injection",
 		Message:     "detected in cookies: 1=1",
 		SourceIP:    net.ParseIP("000.000.0.0"),
 	}
 
-	detector.AddAlert(alert.SignatureID, alert.Severity, alert.AttackType, alert.Message, alert.SourceIP)
+	detector.AddAlert(alert.SignatureID, alert.Revision, alert.Severity, alert.AttackType, alert.Message, alert.SourceIP)
 
 	assert.Len(t, detector.Alerts, 1)
 }
