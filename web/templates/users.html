@@ -23,8 +23,9 @@
     <nav>
       <a href="/docs">Documents</a>
       <a href="/users" class="active">Users</a>
+      <a href="/login">Login</a>
     </nav>
-
+    
     <p style="color: red">{{ .Error }}</p>
     {{ if .Error }}
     <script>alert("{{ .Error }}");</script>
@@ -52,6 +53,7 @@
             hx-target="body"
             hx-trigger="change"
             hx-include="this"
+            {{ if ne $.SessionUser.Role "admin" }}disabled{{ end }} 
           >
             <option value="guest" {{ if eq .Role "guest" }}selected{{ end }}>guest</option>
             <option value="employee" {{ if eq .Role "employee" }}selected{{ end }}>employee</option>
