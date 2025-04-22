@@ -20,8 +20,15 @@
     <title>IDS | Login</title>
   </head>
   <body>
-    <main style="display: flex; flex-direction: column; align-items: center">
-      <h2>Server IDS</h2>
+    <main
+      style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      "
+    >
+      <h2>Intrusion Detection System</h2>
       <form
         action="/login"
         method="post"
@@ -55,6 +62,64 @@
         </button>
       </form>
       <p style="color: red">{{ .Error}}</p>
+
+      <section style="margin-top: 28px">
+        <h3 style="text-decoration: underline; font-weight: bold">
+          Tips to Trigger Detections
+        </h3>
+        <br />
+
+        <h4>SQL injection</h4>
+        <ul>
+          <li>
+            Enter <strong>' OR '1'='1</strong> as the username or password.
+            <br />
+            <small
+              >This could allow a user to bypass a login page:
+              <strong
+                >SELECT * FROM users WHERE username = '' OR '1'='1' AND password
+                = '';</strong
+              ></small
+            >
+          </li>
+          <li>
+            Enter <strong>'; DROP TABLE docs; --</strong> as the username or
+            password.
+            <br />
+            <small
+              >This could cause a table in the database to be deleted:
+              <strong
+                >SELECT * FROM users WHERE username = ''; DROP TABLE users;
+                --';</strong
+              ></small
+            >
+          </li>
+        </ul>
+        <br />
+        <h4>XSS Attack</h4>
+        <ul>
+          <li>
+            Enter in this URL to access the site:
+            <strong
+              >https://server-ids.up.railway.app/login?error=&lt;script&gt;alert('XSS')&lt;/script&gt;</strong
+            >
+            <br />
+            <small
+              >This would cause an alert to be shown in the browser but it could
+              be used to run malicious code for anyone that clicks a link
+            </small>
+          </li>
+          <li>
+            Enter
+            <strong>&lt;script&gt;alert('XSS')&lt;/script&gt;</strong>
+            as the username or password
+            <br />
+            <small
+              >This could be used to run malicious code when entered
+            </small>
+          </li>
+        </ul>
+      </section>
     </main>
   </body>
 </html>
