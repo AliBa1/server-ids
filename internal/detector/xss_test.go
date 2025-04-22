@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"server-ids/internal/template"
 	"strings"
 	"testing"
 
@@ -95,7 +96,8 @@ func TestXSSDetection(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			detector := NewDetector()
+			tmpl := template.NewTestTemplate()
+			detector := NewDetector(tmpl)
 			xssDetection := &XSSDetection{}
 
 			found, err := xssDetection.Run(httptest.NewRecorder(), test.request, detector)

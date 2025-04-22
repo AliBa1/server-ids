@@ -3,6 +3,7 @@ package detector
 import (
 	"net"
 	"net/http"
+	"server-ids/internal/template"
 	"time"
 )
 
@@ -13,10 +14,11 @@ type DetectionService interface {
 type Detector struct {
 	Services []DetectionService
 	Alerts   []Alert
+	tmpl     *template.Templates
 }
 
-func NewDetector() *Detector {
-	return &Detector{}
+func NewDetector(t *template.Templates) *Detector {
+	return &Detector{tmpl: t}
 }
 
 func (d *Detector) AddService(service DetectionService) {
@@ -30,6 +32,7 @@ func (d *Detector) Run(w http.ResponseWriter, r *http.Request) {
 
 	if len(d.Alerts) > 0 {
 		d.AlertAdmin()
+		d.tmpl.Render(w, "alert", nil)
 	}
 }
 

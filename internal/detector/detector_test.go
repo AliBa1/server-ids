@@ -4,13 +4,15 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"server-ids/internal/template"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAddService(t *testing.T) {
-	detector := NewDetector()
+	tmpl := template.NewTestTemplate()
+	detector := NewDetector(tmpl)
 	sql := &SQLDetection{}
 
 	detector.AddService(sql)
@@ -20,7 +22,8 @@ func TestAddService(t *testing.T) {
 }
 
 func TestRunSQL(t *testing.T) {
-	detector := NewDetector()
+	tmpl := template.NewTestTemplate()
+	detector := NewDetector(tmpl)
 	sql := &SQLDetection{}
 	detector.AddService(sql)
 
@@ -35,7 +38,8 @@ func TestRunSQL(t *testing.T) {
 }
 
 func TestRunSQL_NoAttack(t *testing.T) {
-	detector := NewDetector()
+	tmpl := template.NewTestTemplate()
+	detector := NewDetector(tmpl)
 	sql := &SQLDetection{}
 	detector.AddService(sql)
 
@@ -49,7 +53,8 @@ func TestRunSQL_NoAttack(t *testing.T) {
 }
 
 func TestAddAlert(t *testing.T) {
-	detector := NewDetector()
+	tmpl := template.NewTestTemplate()
+	detector := NewDetector(tmpl)
 
 	alert := Alert{
 		SignatureID: 1,
