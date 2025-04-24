@@ -27,7 +27,7 @@ firewalls based on what attack is detected to keep the server running wihtout an
 On top of that I will look to optimize the performance of the IDS by running checks only for attacks that are possible with the incoming traffic.
 I also may run the detections using multithreading which will keep the performance of the system as high as possible.
 
-## System Architecture (_will include network setup_)
+## System Architecture
 
 > **UML (Inital Design)** <br> ![UML for the system code](images/Server%20IDS%20UML.drawio.png)
 
