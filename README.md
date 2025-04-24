@@ -2,9 +2,9 @@
 
 [![Coverage](https://img.shields.io/badge/Coverage-77.9%25-brightgreen)](https://github.com/AliBa1/server-ids/actions)
 
-Network Intrusion Detection System prototype for a REST API using HTTP
 
 ## Abstract
+This is a Network Intrusion Detection System prototype for a REST API made in Golang. The system detects attacks such as SQL Injection, XSS, broken access control, and more going forward. The site is hosted and can be accessed [here](http://server-ids.up.railway.app). The site serves as a company website for internal users to view shared documents. This shows a real world example of how an IDS can be used to find attacks that could happen on an application like this. Going forward an IPS can be added to it to prevent attacks once they are detected.
 
 ## Introduction
 
