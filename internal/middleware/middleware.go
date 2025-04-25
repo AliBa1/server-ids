@@ -6,18 +6,20 @@ import (
 	"net/http"
 	"server-ids/internal/detector"
 	"server-ids/internal/sessions"
+	"server-ids/internal/template"
 )
 
 type Middleware struct {
 	chain []func(http.HandlerFunc) http.HandlerFunc
 	// sessionsDB *sessions.SessionsDB
 	Sessions *sessions.Sessions
+	tmpl     *template.Templates
 }
 
 // runs in reverse order
-func NewMiddleware(s *sessions.Sessions) *Middleware {
+func NewMiddleware(s *sessions.Sessions, t *template.Templates) *Middleware {
 	// m := &Middleware{sessionsDB: sDB}
-	m := &Middleware{Sessions: s}
+	m := &Middleware{Sessions: s, tmpl: t}
 	m.addToChain(m.Logger)
 	// m.addToChain(m.Authorization)
 	m.addToChain(m.IDS)
@@ -47,7 +49,7 @@ func (m *Middleware) Logger(next http.HandlerFunc) http.HandlerFunc {
 
 func (m *Middleware) Authorization(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		d := detector.NewDetector()
+		d := detector.NewDetector(m.tmpl)
 		d.AddService(&detector.BACDetection{
 			// SessionsDB: m.sessionsDB,
 			Sessions: m.Sessions,
@@ -67,7 +69,7 @@ func (m *Middleware) Authorization(next http.HandlerFunc) http.HandlerFunc {
 func (m *Middleware) IDS(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Composite design pattern
-		d := detector.NewDetector()
+		d := detector.NewDetector(m.tmpl)
 
 		err := r.ParseForm()
 		if err != nil {

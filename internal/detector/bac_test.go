@@ -8,6 +8,7 @@ import (
 	"server-ids/internal/database"
 	"server-ids/internal/detector"
 	"server-ids/internal/sessions"
+	"server-ids/internal/template"
 	"server-ids/internal/user"
 	"strings"
 	"testing"
@@ -60,7 +61,8 @@ func TestBACDetection(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			d := detector.NewDetector()
+			tmpl := template.NewTestTemplate()
+			d := detector.NewDetector(tmpl)
 			db := database.CreateMockDB()
 			defer db.Close()
 			ar := auth.NewAuthRepository(db)

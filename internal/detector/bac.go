@@ -37,7 +37,7 @@ func (b *BACDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 		// if not logged in
 		if !b.Sessions.IsUserLoggedIn(r) {
 			msg := "unauthenticated person tried to change " + username + "'s role to a " + newRole
-			d.AddAlert(9, "high", "BAC Attack", msg, ip)
+			d.AddAlert(1, 1, "high", "BAC Attack", msg, ip)
 			found = true
 		} else if !b.Sessions.IsUserAdmin(r) {
 			user, err := b.Sessions.GetUserFromRequest(r)
@@ -45,7 +45,7 @@ func (b *BACDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 				return found, err
 			}
 			msg := user.Username + " tried to change " + username + "'s role to a " + newRole
-			d.AddAlert(10, "medium", "BAC Attack", msg, ip)
+			d.AddAlert(1, 2, "medium", "BAC Attack", msg, ip)
 			found = true
 		}
 	}

@@ -19,7 +19,7 @@ func main() {
 	r := mux.NewRouter()
 	r.PathPrefix("/web/").Handler(http.StripPrefix("/web/", http.FileServer(http.Dir("web"))))
 	r.PathPrefix("/htmx/").Handler(http.StripPrefix("/htmx/", http.FileServer(http.Dir("htmx"))))
-	
+
 	db := database.NewDBConnection()
 	defer db.Close()
 
@@ -29,9 +29,9 @@ func main() {
 
 	sessions := sessions.NewSessions(db)
 
-	middleware := middleware.NewMiddleware(sessions)
-
 	tmpl := template.NewTemplate()
+
+	middleware := middleware.NewMiddleware(sessions, tmpl)
 
 	authService := auth.NewAuthService(authRepo, userRepo)
 	auth.RegisterAuthRoutes(r, middleware, authService, tmpl)

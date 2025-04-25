@@ -22,13 +22,18 @@ func NewUserHandler(service *UserService, template *template.Templates, sessions
 
 func (h *UserHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := h.service.GetAllUsers()
-
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	data := template.ReturnData{Users: users}
+	sessionUser, err := h.sessions.GetUserFromRequest(r)
+	if err != nil {
+		h.tmpl.Render(w, "users", data)
+		return
+	}
+	data.SessionUser = *sessionUser
 	h.tmpl.Render(w, "users", data)
 }
 
@@ -70,7 +75,14 @@ func (h *UserHandler) UpdateRole(w http.ResponseWriter, r *http.Request) {
 		h.tmpl.Render(w, "users", data)
 		return
 	}
-
 	data.Users = users
+
+	sessionUser, err := h.sessions.GetUserFromRequest(r)
+	if err != nil {
+		h.tmpl.Render(w, "users", data)
+		return
+	}
+	data.SessionUser = *sessionUser
+
 	h.tmpl.Render(w, "users", data)
 }

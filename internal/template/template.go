@@ -13,10 +13,11 @@ type Templates struct {
 }
 
 type ReturnData struct {
-	Error     string
-	Documents []models.Document
-	Document  models.Document
-	Users     []models.User
+	Error       string
+	Documents   []models.Document
+	Document    models.Document
+	Users       []models.User
+	SessionUser models.User
 }
 
 func NewTemplate() *Templates {

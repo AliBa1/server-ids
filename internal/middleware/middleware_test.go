@@ -9,6 +9,7 @@ import (
 	"server-ids/internal/database"
 	"server-ids/internal/middleware"
 	"server-ids/internal/sessions"
+	"server-ids/internal/template"
 	"server-ids/internal/user"
 	"strings"
 	"testing"
@@ -19,7 +20,8 @@ import (
 
 func TestNewMiddleware(t *testing.T) {
 	sessions := &sessions.Sessions{}
-	mw := middleware.NewMiddleware(sessions)
+	tmpl := template.NewTestTemplate()
+	mw := middleware.NewMiddleware(sessions, tmpl)
 
 	assert.NotNil(t, mw)
 	assert.Equal(t, sessions, mw.Sessions)

@@ -32,7 +32,7 @@ func (s *SQLDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 	// check url
 	if rules.MatchString(decodedURL) {
 		msg := "detected in url path: " + decodedURL
-		d.AddAlert(1, "medium", "SQL Injection", msg, ip)
+		d.AddAlert(2, 1, "medium", "SQL Injection", msg, ip)
 		found = true
 	}
 
@@ -40,7 +40,7 @@ func (s *SQLDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 	for _, cookie := range r.Cookies() {
 		if rules.MatchString(cookie.Value) {
 			msg := "detected in cookie: " + cookie.Value
-			d.AddAlert(2, "medium", "SQL Injection", msg, ip)
+			d.AddAlert(2, 2, "medium", "SQL Injection", msg, ip)
 			found = true
 		}
 	}
@@ -71,7 +71,7 @@ func (s *SQLDetection) Run(w http.ResponseWriter, r *http.Request, d *Detector) 
 		for _, s := range contents {
 			if rules.MatchString(string(s)) {
 				msg := "detected in body: " + string(s)
-				d.AddAlert(4, "medium", "SQL Injection", msg, ip)
+				d.AddAlert(2, 3, "medium", "SQL Injection", msg, ip)
 				found = true
 			}
 		}

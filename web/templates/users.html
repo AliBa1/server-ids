@@ -23,11 +23,14 @@
     <nav>
       <a href="/docs">Documents</a>
       <a href="/users" class="active">Users</a>
+      <a href="/login">Login</a>
     </nav>
 
     <p style="color: red">{{ .Error }}</p>
     {{ if .Error }}
-    <script>alert("{{ .Error }}");</script>
+    <script>
+      alert("{{ .Error }}");
+    </script>
     {{ end }}
     <table style="border-collapse: collapse; margin: 20px 0">
       <tr style="background-color: #f2f2f2">
@@ -52,6 +55,7 @@
             hx-target="body"
             hx-trigger="change"
             hx-include="this"
+            {{ if ne $.SessionUser.Role "admin" }}disabled{{ end }} 
           >
             <option value="guest" {{ if eq .Role "guest" }}selected{{ end }}>guest</option>
             <option value="employee" {{ if eq .Role "employee" }}selected{{ end }}>employee</option>
@@ -61,6 +65,31 @@
       </tr>
       {{ end }}
     </table>
+
+    <section style="max-width: 450px; width: 100%; margin-top: 30px">
+      <h3 style="text-decoration: underline; font-weight: bold">
+        How to Trigger an Attack
+      </h3>
+      <br />
+
+      <h4>Broken Access Control</h4>
+      <p style="font-style: italic;">This is a way that an attacker or internal member could try to elevate their role to access more permissions</p>
+      <br />
+      <ul>
+        <li>
+          Right click on one of the New Role dropdowns that isn't an admin and click inspect element
+        </li>
+        <li>
+          In the elements section that popped up delete 'disabled' from inside of the select tag
+        </li>
+        <li>
+          Once it's deleted click on the dropdown and change the role to an admin
+        </li>
+        <li>
+          You will now see an alert that confirms that broken access control has been detected
+        </li>
+      </ul>
+    </section>
   </body>
 </html>
 {{ end }}
