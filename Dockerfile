@@ -12,50 +12,31 @@ ARG GO_VERSION=1.23.0
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS build
 WORKDIR /src
 
-# # Download dependencies as a separate step to take advantage of Docker's caching.
-# # Leverage a cache mount to /go/pkg/mod/ to speed up subsequent builds.
-# # Leverage bind mounts to go.sum and go.mod to avoid having to copy them into
-# # the container.
-# RUN --mount=type=cache,target=/go/pkg/mod/ \
-#     --mount=type=bind,source=go.sum,target=go.sum \
-#     --mount=type=bind,source=go.mod,target=go.mod \
-#     go mod download -x
+# Download dependencies as a separate step to take advantage of Docker's caching.
+# Leverage a cache mount to /go/pkg/mod/ to speed up subsequent builds.
+# Leverage bind mounts to go.sum and go.mod to avoid having to copy them into
+# the container.
+RUN --mount=type=cache,target=/go/pkg/mod/ \
+    --mount=type=bind,source=go.sum,target=go.sum \
+    --mount=type=bind,source=go.mod,target=go.mod \
+    go mod download -x
 
-# # This is the architecture you're building for, which is passed in by the builder.
-# # Placing it here allows the previous steps to be cached across architectures.
-# ARG TARGETARCH
-
-# # Run Tests
-# RUN --mount=type=cache,target=/go/pkg/mod/ \
-#     --mount=type=bind,target=. \
-#     CGO_ENABLED=1 GOARCH=$TARGETARCH go test ./...
-
-# # Build the application.
-# # Leverage a cache mount to /go/pkg/mod/ to speed up subsequent builds.
-# # Leverage a bind mount to the current directory to avoid having to copy the
-# # source code into the container.
-# RUN --mount=type=cache,target=/go/pkg/mod/ \
-#     --mount=type=bind,target=. \
-#     CGO_ENABLED=1 GOARCH=$TARGETARCH go build -o /bin/server .
-
-
-# Download dependencies using cache and bind mounts
-RUN --mount=type=cache,target=/go/pkg/mod,id=gomodcache \
-    --mount=type=bind,source=go.sum,target=/src/go.sum \
-    --mount=type=bind,source=go.mod,target=/src/go.mod \
-    WORKDIR=/src go mod download -x
-
+# This is the architecture you're building for, which is passed in by the builder.
+# Placing it here allows the previous steps to be cached across architectures.
 ARG TARGETARCH
 
 # Run Tests
-RUN --mount=type=cache,target=/go/pkg/mod,id=gomodcache \
-    --mount=type=bind,source=.,target=/src \
-    WORKDIR=/src CGO_ENABLED=1 GOARCH=$TARGETARCH go test ./...
+RUN --mount=type=cache,target=/go/pkg/mod/ \
+    --mount=type=bind,target=. \
+    CGO_ENABLED=1 GOARCH=$TARGETARCH go test ./...
 
-# Build the application
-RUN --mount=type=cache,target=/go/pkg/mod,id=gomodcache \
-    --mount=type=bind,source=.,target=/src \
-    WORKDIR=/src CGO_ENABLED=1 GOARCH=$TARGETARCH go build -o /bin/server .
+# Build the application.
+# Leverage a cache mount to /go/pkg/mod/ to speed up subsequent builds.
+# Leverage a bind mount to the current directory to avoid having to copy the
+# source code into the container.
+RUN --mount=type=cache,target=/go/pkg/mod/ \
+    --mount=type=bind,target=. \
+    CGO_ENABLED=1 GOARCH=$TARGETARCH go build -o /bin/server .
 
 ################################################################################
 # Create a new stage for running the application that contains the minimal
