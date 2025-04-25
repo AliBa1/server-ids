@@ -49,6 +49,7 @@ jobs:
       # SVC_ID: my-service-id
       SVC_ID: ${{ vars.RAILWAY_SVC_ID }}
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+    needs: build
     steps:
       # - uses: actions/checkout@v3
       - uses: actions/checkout@v4
